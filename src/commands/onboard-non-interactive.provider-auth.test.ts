@@ -83,16 +83,16 @@ async function withOnboardEnv(
     await withEnvAsync(
       {
         HOME: tempHome,
-        OPENCLAW_STATE_DIR: tempHome,
-        OPENCLAW_CONFIG_PATH: configPath,
-        OPENCLAW_SKIP_CHANNELS: "1",
-        OPENCLAW_SKIP_GMAIL_WATCHER: "1",
-        OPENCLAW_SKIP_CRON: "1",
-        OPENCLAW_SKIP_CANVAS_HOST: "1",
-        OPENCLAW_GATEWAY_TOKEN: undefined,
-        OPENCLAW_GATEWAY_PASSWORD: undefined,
+        PRONETHEIA_STATE_DIR: tempHome,
+        PRONETHEIA_CONFIG_PATH: configPath,
+        PRONETHEIA_SKIP_CHANNELS: "1",
+        PRONETHEIA_SKIP_GMAIL_WATCHER: "1",
+        PRONETHEIA_SKIP_CRON: "1",
+        PRONETHEIA_SKIP_CANVAS_HOST: "1",
+        PRONETHEIA_GATEWAY_TOKEN: undefined,
+        PRONETHEIA_GATEWAY_PASSWORD: undefined,
         CUSTOM_API_KEY: undefined,
-        OPENCLAW_DISABLE_CONFIG_CACHE: "1",
+        PRONETHEIA_DISABLE_CONFIG_CACHE: "1",
       },
       async () => {
         await run({ configPath, runtime });

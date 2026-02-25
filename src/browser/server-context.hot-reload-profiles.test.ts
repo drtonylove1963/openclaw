@@ -134,7 +134,7 @@ describe("server-context hot-reload profiles", () => {
       profiles: new Map(),
     };
 
-    cfgProfiles.openclaw = { cdpPort: 19999, color: "#FF4500" };
+    cfgProfiles.pronetheia = { cdpPort: 19999, color: "#FF4500" };
     cachedConfig = null;
 
     const after = resolveBrowserProfileWithHotReload({
@@ -143,7 +143,7 @@ describe("server-context hot-reload profiles", () => {
       name: "openclaw",
     });
     expect(after?.cdpPort).toBe(19999);
-    expect(state.resolved.profiles.openclaw?.cdpPort).toBe(19999);
+    expect(state.resolved.profiles.pronetheia?.cdpPort).toBe(19999);
   });
 
   it("listProfiles refreshes config before enumerating profiles", async () => {

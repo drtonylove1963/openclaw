@@ -175,8 +175,8 @@ describe("cdp.helpers", () => {
   it("adds relay header for known relay ports", async () => {
     const port = await getFreePort();
     const cdpUrl = `http://127.0.0.1:${port}`;
-    const prev = process.env.OPENCLAW_GATEWAY_TOKEN;
-    process.env.OPENCLAW_GATEWAY_TOKEN = "test-gateway-token";
+    const prev = process.env.PRONETHEIA_GATEWAY_TOKEN;
+    process.env.PRONETHEIA_GATEWAY_TOKEN = "test-gateway-token";
     try {
       await ensureChromeExtensionRelayServer({ cdpUrl });
       const headers = getHeadersWithAuth(`${cdpUrl}/json/version`);
@@ -185,9 +185,9 @@ describe("cdp.helpers", () => {
     } finally {
       await stopChromeExtensionRelayServer({ cdpUrl }).catch(() => {});
       if (prev === undefined) {
-        delete process.env.OPENCLAW_GATEWAY_TOKEN;
+        delete process.env.PRONETHEIA_GATEWAY_TOKEN;
       } else {
-        process.env.OPENCLAW_GATEWAY_TOKEN = prev;
+        process.env.PRONETHEIA_GATEWAY_TOKEN = prev;
       }
     }
   });
@@ -231,7 +231,7 @@ describe("browser server-context listKnownProfileNames", () => {
         [
           "stale-removed",
           {
-            profile: { ...openclaw, name: "stale-removed" },
+            profile: { ...pronetheia, name: "stale-removed" },
             running: null,
           },
         ],

@@ -73,7 +73,7 @@ describe("doctor command", () => {
       findLegacyGatewayServices.mockResolvedValueOnce([
         {
           platform: "darwin",
-          label: "com.steipete.openclaw.gateway",
+          label: "com.steipete.pronetheia.gateway",
           detail: "loaded",
         },
       ]);
@@ -88,7 +88,7 @@ describe("doctor command", () => {
   );
 
   it("offers to update first for git checkouts", async () => {
-    delete process.env.OPENCLAW_UPDATE_IN_PROGRESS;
+    delete process.env.PRONETHEIA_UPDATE_IN_PROGRESS;
 
     const root = "/tmp/openclaw";
     resolveOpenClawPackageRoot.mockResolvedValueOnce(root);

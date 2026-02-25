@@ -38,7 +38,7 @@ describe("push APNs registration store", () => {
     const saved = await registerApnsToken({
       nodeId: "ios-node-1",
       token: "ABCD1234ABCD1234ABCD1234ABCD1234",
-      topic: "ai.openclaw.ios",
+      topic: "ai.pronetheia.ios",
       environment: "sandbox",
       baseDir,
     });
@@ -47,7 +47,7 @@ describe("push APNs registration store", () => {
     expect(loaded).not.toBeNull();
     expect(loaded?.nodeId).toBe("ios-node-1");
     expect(loaded?.token).toBe("abcd1234abcd1234abcd1234abcd1234");
-    expect(loaded?.topic).toBe("ai.openclaw.ios");
+    expect(loaded?.topic).toBe("ai.pronetheia.ios");
     expect(loaded?.environment).toBe("sandbox");
     expect(loaded?.updatedAtMs).toBe(saved.updatedAtMs);
   });
@@ -58,7 +58,7 @@ describe("push APNs registration store", () => {
       registerApnsToken({
         nodeId: "ios-node-1",
         token: "not-a-token",
-        topic: "ai.openclaw.ios",
+        topic: "ai.pronetheia.ios",
         baseDir,
       }),
     ).rejects.toThrow("invalid APNs token");
@@ -74,9 +74,9 @@ describe("push APNs env config", () => {
 
   it("resolves inline private key and unescapes newlines", async () => {
     const env = {
-      OPENCLAW_APNS_TEAM_ID: "TEAM123",
-      OPENCLAW_APNS_KEY_ID: "KEY123",
-      OPENCLAW_APNS_PRIVATE_KEY_P8:
+      PRONETHEIA_APNS_TEAM_ID: "TEAM123",
+      PRONETHEIA_APNS_KEY_ID: "KEY123",
+      PRONETHEIA_APNS_PRIVATE_KEY_P8:
         "-----BEGIN PRIVATE KEY-----\\nline-a\\nline-b\\n-----END PRIVATE KEY-----",
     } as NodeJS.ProcessEnv;
     const resolved = await resolveApnsAuthConfigFromEnv(env);
@@ -95,7 +95,7 @@ describe("push APNs env config", () => {
     if (resolved.ok) {
       return;
     }
-    expect(resolved.error).toContain("OPENCLAW_APNS_TEAM_ID");
+    expect(resolved.error).toContain("PRONETHEIA_APNS_TEAM_ID");
   });
 });
 
@@ -116,7 +116,7 @@ describe("push APNs send semantics", () => {
       registration: {
         nodeId: "ios-node-alert",
         token: "ABCD1234ABCD1234ABCD1234ABCD1234",
-        topic: "ai.openclaw.ios",
+        topic: "ai.pronetheia.ios",
         environment: "sandbox",
         updatedAtMs: 1,
       },
@@ -160,7 +160,7 @@ describe("push APNs send semantics", () => {
       registration: {
         nodeId: "ios-node-wake",
         token: "ABCD1234ABCD1234ABCD1234ABCD1234",
-        topic: "ai.openclaw.ios",
+        topic: "ai.pronetheia.ios",
         environment: "production",
         updatedAtMs: 1,
       },
@@ -207,7 +207,7 @@ describe("push APNs send semantics", () => {
       registration: {
         nodeId: "ios-node-wake-default-reason",
         token: "ABCD1234ABCD1234ABCD1234ABCD1234",
-        topic: "ai.openclaw.ios",
+        topic: "ai.pronetheia.ios",
         environment: "sandbox",
         updatedAtMs: 1,
       },

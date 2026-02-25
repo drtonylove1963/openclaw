@@ -208,7 +208,7 @@ describe("doctor config flow", () => {
 
   it("converts numeric discord ids to strings on repair", async () => {
     await withTempHome(async (home) => {
-      const configDir = path.join(home, ".openclaw");
+      const configDir = path.join(home, ".pronetheia");
       await fs.mkdir(configDir, { recursive: true });
       await fs.writeFile(
         path.join(configDir, "openclaw.json"),

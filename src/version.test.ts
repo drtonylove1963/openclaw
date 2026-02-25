@@ -94,11 +94,11 @@ describe("version resolution", () => {
     expect(resolveVersionFromModuleUrl("not-a-valid-url")).toBeNull();
   });
 
-  it("prefers OPENCLAW_VERSION over service and package versions", () => {
+  it("prefers PRONETHEIA_VERSION over service and package versions", () => {
     expect(
       resolveRuntimeServiceVersion({
-        OPENCLAW_VERSION: "9.9.9",
-        OPENCLAW_SERVICE_VERSION: "2.2.2",
+        PRONETHEIA_VERSION: "9.9.9",
+        PRONETHEIA_SERVICE_VERSION: "2.2.2",
         npm_package_version: "1.1.1",
       }),
     ).toBe("9.9.9");
@@ -107,16 +107,16 @@ describe("version resolution", () => {
   it("uses service and package fallbacks and ignores blank env values", () => {
     expect(
       resolveRuntimeServiceVersion({
-        OPENCLAW_VERSION: "   ",
-        OPENCLAW_SERVICE_VERSION: "  2.0.0  ",
+        PRONETHEIA_VERSION: "   ",
+        PRONETHEIA_SERVICE_VERSION: "  2.0.0  ",
         npm_package_version: "1.0.0",
       }),
     ).toBe("2.0.0");
 
     expect(
       resolveRuntimeServiceVersion({
-        OPENCLAW_VERSION: " ",
-        OPENCLAW_SERVICE_VERSION: "\t",
+        PRONETHEIA_VERSION: " ",
+        PRONETHEIA_SERVICE_VERSION: "\t",
         npm_package_version: " 1.0.0-package ",
       }),
     ).toBe("1.0.0-package");
@@ -124,8 +124,8 @@ describe("version resolution", () => {
     expect(
       resolveRuntimeServiceVersion(
         {
-          OPENCLAW_VERSION: "",
-          OPENCLAW_SERVICE_VERSION: " ",
+          PRONETHEIA_VERSION: "",
+          PRONETHEIA_SERVICE_VERSION: " ",
           npm_package_version: "",
         },
         "fallback",

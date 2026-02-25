@@ -102,14 +102,14 @@ function defaultIndexHTML() {
     !!(
       window.webkit &&
       window.webkit.messageHandlers &&
-      window.webkit.messageHandlers.openclawCanvasA2UIAction
+      window.webkit.messageHandlers.pronetheiaCanvasA2UIAction
     );
   const hasAndroid = () =>
     !!(
-      (window.openclawCanvasA2UIAction &&
-        typeof window.openclawCanvasA2UIAction.postMessage === "function")
+      (window.pronetheiaCanvasA2UIAction &&
+        typeof window.pronetheiaCanvasA2UIAction.postMessage === "function")
     );
-  const hasHelper = () => typeof window.openclawSendUserAction === "function";
+  const hasHelper = () => typeof window.pronetheiaSendUserAction === "function";
   statusEl.innerHTML =
     "Bridge: " +
     (hasHelper() ? "<span class='ok'>ready</span>" : "<span class='bad'>missing</span>") +
@@ -128,8 +128,8 @@ function defaultIndexHTML() {
       return;
     }
     const sendUserAction =
-      typeof window.openclawSendUserAction === "function"
-        ? window.openclawSendUserAction
+      typeof window.pronetheiaSendUserAction === "function"
+        ? window.pronetheiaSendUserAction
         : undefined;
     const ok = sendUserAction({
       name,
@@ -150,10 +150,10 @@ function defaultIndexHTML() {
 }
 
 function isDisabledByEnv() {
-  if (isTruthyEnvValue(process.env.OPENCLAW_SKIP_CANVAS_HOST)) {
+  if (isTruthyEnvValue(process.env.PRONETHEIA_SKIP_CANVAS_HOST)) {
     return true;
   }
-  if (isTruthyEnvValue(process.env.OPENCLAW_SKIP_CANVAS_HOST)) {
+  if (isTruthyEnvValue(process.env.PRONETHEIA_SKIP_CANVAS_HOST)) {
     return true;
   }
   if (process.env.NODE_ENV === "test") {

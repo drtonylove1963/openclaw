@@ -298,7 +298,7 @@ function missingSearchKeyPayload(provider: (typeof SEARCH_PROVIDERS)[number]) {
       error: "missing_perplexity_api_key",
       message:
         "web_search (perplexity) needs an API key. Set PERPLEXITY_API_KEY or OPENROUTER_API_KEY in the Gateway environment, or configure tools.web.search.perplexity.apiKey.",
-      docs: "https://docs.openclaw.ai/tools/web",
+      docs: "https://docs.pronetheia.ai/tools/web",
     };
   }
   if (provider === "grok") {
@@ -306,7 +306,7 @@ function missingSearchKeyPayload(provider: (typeof SEARCH_PROVIDERS)[number]) {
       error: "missing_xai_api_key",
       message:
         "web_search (grok) needs an xAI API key. Set XAI_API_KEY in the Gateway environment, or configure tools.web.search.grok.apiKey.",
-      docs: "https://docs.openclaw.ai/tools/web",
+      docs: "https://docs.pronetheia.ai/tools/web",
     };
   }
   if (provider === "gemini") {
@@ -314,7 +314,7 @@ function missingSearchKeyPayload(provider: (typeof SEARCH_PROVIDERS)[number]) {
       error: "missing_gemini_api_key",
       message:
         "web_search (gemini) needs an API key. Set GEMINI_API_KEY in the Gateway environment, or configure tools.web.search.gemini.apiKey.",
-      docs: "https://docs.openclaw.ai/tools/web",
+      docs: "https://docs.pronetheia.ai/tools/web",
     };
   }
   if (provider === "kimi") {
@@ -322,13 +322,13 @@ function missingSearchKeyPayload(provider: (typeof SEARCH_PROVIDERS)[number]) {
       error: "missing_kimi_api_key",
       message:
         "web_search (kimi) needs a Moonshot API key. Set KIMI_API_KEY or MOONSHOT_API_KEY in the Gateway environment, or configure tools.web.search.kimi.apiKey.",
-      docs: "https://docs.openclaw.ai/tools/web",
+      docs: "https://docs.pronetheia.ai/tools/web",
     };
   }
   return {
     error: "missing_brave_api_key",
     message: `web_search needs a Brave Search API key. Run \`${formatCliCommand("openclaw configure --section web")}\` to store it, or set BRAVE_API_KEY in the Gateway environment.`,
-    docs: "https://docs.openclaw.ai/tools/web",
+    docs: "https://docs.pronetheia.ai/tools/web",
   };
 }
 
@@ -1360,14 +1360,14 @@ export function createWebSearchTool(options?: {
           error: "invalid_search_lang",
           message:
             "search_lang must be a 2-letter ISO language code like 'en' (not a locale like 'en-US').",
-          docs: "https://docs.openclaw.ai/tools/web",
+          docs: "https://docs.pronetheia.ai/tools/web",
         });
       }
       if (normalizedBraveLanguageParams.invalidField === "ui_lang") {
         return jsonResult({
           error: "invalid_ui_lang",
           message: "ui_lang must be a language-region locale like 'en-US'.",
-          docs: "https://docs.openclaw.ai/tools/web",
+          docs: "https://docs.pronetheia.ai/tools/web",
         });
       }
       const search_lang = normalizedBraveLanguageParams.search_lang;
@@ -1377,7 +1377,7 @@ export function createWebSearchTool(options?: {
         return jsonResult({
           error: "unsupported_freshness",
           message: "freshness is only supported by the Brave and Perplexity web_search providers.",
-          docs: "https://docs.openclaw.ai/tools/web",
+          docs: "https://docs.pronetheia.ai/tools/web",
         });
       }
       const freshness = rawFreshness ? normalizeFreshness(rawFreshness) : undefined;
@@ -1386,7 +1386,7 @@ export function createWebSearchTool(options?: {
           error: "invalid_freshness",
           message:
             "freshness must be one of pd, pw, pm, py, or a range like YYYY-MM-DDtoYYYY-MM-DD.",
-          docs: "https://docs.openclaw.ai/tools/web",
+          docs: "https://docs.pronetheia.ai/tools/web",
         });
       }
       const result = await runWebSearch({

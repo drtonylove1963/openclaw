@@ -50,11 +50,11 @@ export function configureProgramHelp(program: Command, ctx: ProgramContext) {
     .version(ctx.programVersion)
     .option(
       "--dev",
-      "Dev profile: isolate state under ~/.openclaw-dev, default gateway port 19001, and shift derived ports (browser/canvas)",
+      "Dev profile: isolate state under ~/.pronetheia-dev, default gateway port 19001, and shift derived ports (browser/canvas)",
     )
     .option(
       "--profile <name>",
-      "Use a named profile (isolates OPENCLAW_STATE_DIR/OPENCLAW_CONFIG_PATH under ~/.openclaw-<name>)",
+      "Use a named profile (isolates PRONETHEIA_STATE_DIR/PRONETHEIA_CONFIG_PATH under ~/.pronetheia-<name>)",
     )
     .option(
       "--log-level <level>",
@@ -130,7 +130,7 @@ export function configureProgramHelp(program: Command, ctx: ProgramContext) {
     if (command !== program) {
       return "";
     }
-    const docs = formatDocsLink("/cli", "docs.openclaw.ai/cli");
+    const docs = formatDocsLink("/cli", "docs.pronetheia.ai/cli");
     return `\n${theme.heading("Examples:")}\n${fmtExamples}\n\n${theme.muted("Docs:")} ${docs}\n`;
   });
 }

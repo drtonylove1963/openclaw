@@ -1,6 +1,6 @@
 import { createRequire } from "node:module";
 
-declare const __OPENCLAW_VERSION__: string | undefined;
+declare const __PRONETHEIA_VERSION__: string | undefined;
 const CORE_PACKAGE_NAME = "openclaw";
 
 const PACKAGE_JSON_CANDIDATES = [
@@ -81,8 +81,8 @@ export function resolveRuntimeServiceVersion(
 ): string {
   return (
     firstNonEmpty(
-      env["OPENCLAW_VERSION"],
-      env["OPENCLAW_SERVICE_VERSION"],
+      env["PRONETHEIA_VERSION"],
+      env["PRONETHEIA_SERVICE_VERSION"],
       env["npm_package_version"],
     ) ?? fallback
   );
@@ -92,7 +92,7 @@ export function resolveRuntimeServiceVersion(
 // - Embedded/bundled builds: injected define or env var.
 // - Dev/npm builds: package.json.
 export const VERSION =
-  (typeof __OPENCLAW_VERSION__ === "string" && __OPENCLAW_VERSION__) ||
-  process.env.OPENCLAW_BUNDLED_VERSION ||
+  (typeof __PRONETHEIA_VERSION__ === "string" && __PRONETHEIA_VERSION__) ||
+  process.env.PRONETHEIA_BUNDLED_VERSION ||
   resolveVersionFromModuleUrl(import.meta.url) ||
   "0.0.0";

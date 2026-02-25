@@ -5,8 +5,8 @@ import { captureEnv } from "../test-utils/env.js";
 let envSnapshot: ReturnType<typeof captureEnv>;
 
 beforeAll(() => {
-  envSnapshot = captureEnv(["OPENCLAW_PROFILE"]);
-  process.env.OPENCLAW_PROFILE = "isolated";
+  envSnapshot = captureEnv(["PRONETHEIA_PROFILE"]);
+  process.env.PRONETHEIA_PROFILE = "isolated";
 });
 
 afterAll(() => {
@@ -297,7 +297,7 @@ vi.mock("../daemon/service.js", () => ({
     readRuntime: async () => ({ status: "running", pid: 1234 }),
     readCommand: async () => ({
       programArguments: ["node", "dist/entry.js", "gateway"],
-      sourcePath: "/tmp/Library/LaunchAgents/ai.openclaw.gateway.plist",
+      sourcePath: "/tmp/Library/LaunchAgents/ai.pronetheia.gateway.plist",
     }),
   }),
 }));
@@ -310,7 +310,7 @@ vi.mock("../daemon/node-service.js", () => ({
     readRuntime: async () => ({ status: "running", pid: 4321 }),
     readCommand: async () => ({
       programArguments: ["node", "dist/entry.js", "node-host"],
-      sourcePath: "/tmp/Library/LaunchAgents/ai.openclaw.node.plist",
+      sourcePath: "/tmp/Library/LaunchAgents/ai.pronetheia.node.plist",
     }),
   }),
 }));
@@ -409,8 +409,8 @@ describe("statusCommand", () => {
   });
 
   it("shows gateway auth when reachable", async () => {
-    const prevToken = process.env.OPENCLAW_GATEWAY_TOKEN;
-    process.env.OPENCLAW_GATEWAY_TOKEN = "abcd1234";
+    const prevToken = process.env.PRONETHEIA_GATEWAY_TOKEN;
+    process.env.PRONETHEIA_GATEWAY_TOKEN = "abcd1234";
     try {
       mocks.probeGateway.mockResolvedValueOnce({
         ok: true,
@@ -429,9 +429,9 @@ describe("statusCommand", () => {
       expect(logs.some((l: string) => l.includes("auth token"))).toBe(true);
     } finally {
       if (prevToken === undefined) {
-        delete process.env.OPENCLAW_GATEWAY_TOKEN;
+        delete process.env.PRONETHEIA_GATEWAY_TOKEN;
       } else {
-        process.env.OPENCLAW_GATEWAY_TOKEN = prevToken;
+        process.env.PRONETHEIA_GATEWAY_TOKEN = prevToken;
       }
     }
   });

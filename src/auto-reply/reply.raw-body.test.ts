@@ -35,7 +35,7 @@ const { withTempHome } = createTempHomeHarness({ prefix: "openclaw-rawbody-" });
 
 describe("RawBody directive parsing", () => {
   beforeEach(() => {
-    vi.stubEnv("OPENCLAW_TEST_FAST", "1");
+    vi.stubEnv("PRONETHEIA_TEST_FAST", "1");
     agentMocks.runEmbeddedPiAgent.mockClear();
     agentMocks.loadModelCatalog.mockClear();
     agentMocks.loadModelCatalog.mockResolvedValue([

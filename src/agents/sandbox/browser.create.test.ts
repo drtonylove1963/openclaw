@@ -159,9 +159,9 @@ describe("ensureSandboxBrowser create args", () => {
     expect(createArgs).toContain("127.0.0.1::6080");
     const envEntries = envEntriesFromDockerArgs(createArgs ?? []);
     const passwordEntry = envEntries.find((entry) =>
-      entry.startsWith("OPENCLAW_BROWSER_NOVNC_PASSWORD="),
+      entry.startsWith("PRONETHEIA_BROWSER_NOVNC_PASSWORD="),
     );
-    expect(passwordEntry).toMatch(/^OPENCLAW_BROWSER_NOVNC_PASSWORD=[a-f0-9]{8}$/);
+    expect(passwordEntry).toMatch(/^PRONETHEIA_BROWSER_NOVNC_PASSWORD=[a-f0-9]{8}$/);
     expect(result?.noVncUrl).toMatch(/^http:\/\/127\.0\.0\.1:19000\/sandbox\/novnc\?token=/);
     expect(result?.noVncUrl).not.toContain("password=");
   });
@@ -178,7 +178,7 @@ describe("ensureSandboxBrowser create args", () => {
       (call: unknown[]) => Array.isArray(call[0]) && call[0][0] === "create",
     )?.[0] as string[] | undefined;
     const envEntries = envEntriesFromDockerArgs(createArgs ?? []);
-    expect(envEntries.some((entry) => entry.startsWith("OPENCLAW_BROWSER_NOVNC_PASSWORD="))).toBe(
+    expect(envEntries.some((entry) => entry.startsWith("PRONETHEIA_BROWSER_NOVNC_PASSWORD="))).toBe(
       false,
     );
     expect(result?.noVncUrl).toBeUndefined();

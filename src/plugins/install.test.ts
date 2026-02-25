@@ -271,7 +271,7 @@ beforeEach(() => {
 });
 
 describe("installPluginFromArchive", () => {
-  it("installs into ~/.openclaw/extensions and uses unscoped id", async () => {
+  it("installs into ~/.pronetheia/extensions and uses unscoped id", async () => {
     const { stateDir, archivePath, extensionsDir } = await setupVoiceCallArchiveInstall({
       outName: "plugin.tgz",
       version: "0.0.1",
@@ -510,7 +510,7 @@ describe("installPluginFromDir", () => {
     ) as {
       devDependencies?: Record<string, string>;
     };
-    expect(manifest.devDependencies?.openclaw).toBeUndefined();
+    expect(manifest.devDependencies?.pronetheia).toBeUndefined();
     expect(manifest.devDependencies?.vitest).toBe("^3.0.0");
   });
 

@@ -63,37 +63,37 @@ describe("systemd runtime parsing", () => {
 describe("resolveSystemdUserUnitPath", () => {
   it.each([
     {
-      name: "uses default service name when OPENCLAW_PROFILE is unset",
+      name: "uses default service name when PRONETHEIA_PROFILE is unset",
       env: { HOME: "/home/test" },
       expected: "/home/test/.config/systemd/user/openclaw-gateway.service",
     },
     {
-      name: "uses profile-specific service name when OPENCLAW_PROFILE is set to a custom value",
-      env: { HOME: "/home/test", OPENCLAW_PROFILE: "jbphoenix" },
+      name: "uses profile-specific service name when PRONETHEIA_PROFILE is set to a custom value",
+      env: { HOME: "/home/test", PRONETHEIA_PROFILE: "jbphoenix" },
       expected: "/home/test/.config/systemd/user/openclaw-gateway-jbphoenix.service",
     },
     {
-      name: "prefers OPENCLAW_SYSTEMD_UNIT over OPENCLAW_PROFILE",
+      name: "prefers PRONETHEIA_SYSTEMD_UNIT over PRONETHEIA_PROFILE",
       env: {
         HOME: "/home/test",
-        OPENCLAW_PROFILE: "jbphoenix",
-        OPENCLAW_SYSTEMD_UNIT: "custom-unit",
+        PRONETHEIA_PROFILE: "jbphoenix",
+        PRONETHEIA_SYSTEMD_UNIT: "custom-unit",
       },
       expected: "/home/test/.config/systemd/user/custom-unit.service",
     },
     {
-      name: "handles OPENCLAW_SYSTEMD_UNIT with .service suffix",
+      name: "handles PRONETHEIA_SYSTEMD_UNIT with .service suffix",
       env: {
         HOME: "/home/test",
-        OPENCLAW_SYSTEMD_UNIT: "custom-unit.service",
+        PRONETHEIA_SYSTEMD_UNIT: "custom-unit.service",
       },
       expected: "/home/test/.config/systemd/user/custom-unit.service",
     },
     {
-      name: "trims whitespace from OPENCLAW_SYSTEMD_UNIT",
+      name: "trims whitespace from PRONETHEIA_SYSTEMD_UNIT",
       env: {
         HOME: "/home/test",
-        OPENCLAW_SYSTEMD_UNIT: "  custom-unit  ",
+        PRONETHEIA_SYSTEMD_UNIT: "  custom-unit  ",
       },
       expected: "/home/test/.config/systemd/user/custom-unit.service",
     },
@@ -180,7 +180,7 @@ describe("systemd service control", () => {
     const write = vi.fn();
     const stdout = { write } as unknown as NodeJS.WritableStream;
 
-    await restartSystemdService({ stdout, env: { OPENCLAW_PROFILE: "work" } });
+    await restartSystemdService({ stdout, env: { PRONETHEIA_PROFILE: "work" } });
 
     expect(write).toHaveBeenCalledTimes(1);
     expect(String(write.mock.calls[0]?.[0])).toContain("Restarted systemd service");

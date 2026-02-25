@@ -138,10 +138,10 @@ describe("jidToE164", () => {
 });
 
 describe("resolveConfigDir", () => {
-  it("prefers ~/.openclaw when legacy dir is missing", async () => {
+  it("prefers ~/.pronetheia when legacy dir is missing", async () => {
     const root = await fs.promises.mkdtemp(path.join(os.tmpdir(), "openclaw-config-dir-"));
     try {
-      const newDir = path.join(root, ".openclaw");
+      const newDir = path.join(root, ".pronetheia");
       await fs.promises.mkdir(newDir, { recursive: true });
       const resolved = resolveConfigDir({} as NodeJS.ProcessEnv, () => root);
       expect(resolved).toBe(newDir);
@@ -152,8 +152,8 @@ describe("resolveConfigDir", () => {
 });
 
 describe("resolveHomeDir", () => {
-  it("prefers OPENCLAW_HOME over HOME", () => {
-    vi.stubEnv("OPENCLAW_HOME", "/srv/openclaw-home");
+  it("prefers PRONETHEIA_HOME over HOME", () => {
+    vi.stubEnv("PRONETHEIA_HOME", "/srv/openclaw-home");
     vi.stubEnv("HOME", "/home/other");
 
     expect(resolveHomeDir()).toBe(path.resolve("/srv/openclaw-home"));
@@ -163,12 +163,12 @@ describe("resolveHomeDir", () => {
 });
 
 describe("shortenHomePath", () => {
-  it("uses $OPENCLAW_HOME prefix when OPENCLAW_HOME is set", () => {
-    vi.stubEnv("OPENCLAW_HOME", "/srv/openclaw-home");
+  it("uses $PRONETHEIA_HOME prefix when PRONETHEIA_HOME is set", () => {
+    vi.stubEnv("PRONETHEIA_HOME", "/srv/openclaw-home");
     vi.stubEnv("HOME", "/home/other");
 
-    expect(shortenHomePath(`${path.resolve("/srv/openclaw-home")}/.openclaw/openclaw.json`)).toBe(
-      "$OPENCLAW_HOME/.openclaw/openclaw.json",
+    expect(shortenHomePath(`${path.resolve("/srv/openclaw-home")}/.pronetheia/openclaw.json`)).toBe(
+      "$PRONETHEIA_HOME/.pronetheia/openclaw.json",
     );
 
     vi.unstubAllEnvs();
@@ -176,13 +176,13 @@ describe("shortenHomePath", () => {
 });
 
 describe("shortenHomeInString", () => {
-  it("uses $OPENCLAW_HOME replacement when OPENCLAW_HOME is set", () => {
-    vi.stubEnv("OPENCLAW_HOME", "/srv/openclaw-home");
+  it("uses $PRONETHEIA_HOME replacement when PRONETHEIA_HOME is set", () => {
+    vi.stubEnv("PRONETHEIA_HOME", "/srv/openclaw-home");
     vi.stubEnv("HOME", "/home/other");
 
     expect(
-      shortenHomeInString(`config: ${path.resolve("/srv/openclaw-home")}/.openclaw/openclaw.json`),
-    ).toBe("config: $OPENCLAW_HOME/.openclaw/openclaw.json");
+      shortenHomeInString(`config: ${path.resolve("/srv/openclaw-home")}/.pronetheia/openclaw.json`),
+    ).toBe("config: $PRONETHEIA_HOME/.pronetheia/openclaw.json");
 
     vi.unstubAllEnvs();
   });
@@ -227,8 +227,8 @@ describe("resolveUserPath", () => {
     expect(resolveUserPath("tmp/dir")).toBe(path.resolve("tmp/dir"));
   });
 
-  it("prefers OPENCLAW_HOME for tilde expansion", () => {
-    vi.stubEnv("OPENCLAW_HOME", "/srv/openclaw-home");
+  it("prefers PRONETHEIA_HOME for tilde expansion", () => {
+    vi.stubEnv("PRONETHEIA_HOME", "/srv/openclaw-home");
     vi.stubEnv("HOME", "/home/other");
 
     expect(resolveUserPath("~/openclaw")).toBe(path.resolve("/srv/openclaw-home", "openclaw"));

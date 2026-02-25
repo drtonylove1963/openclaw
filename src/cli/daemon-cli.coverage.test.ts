@@ -97,15 +97,15 @@ describe("daemon-cli coverage", () => {
 
   beforeEach(() => {
     envSnapshot = captureEnv([
-      "OPENCLAW_STATE_DIR",
-      "OPENCLAW_CONFIG_PATH",
-      "OPENCLAW_GATEWAY_PORT",
-      "OPENCLAW_PROFILE",
+      "PRONETHEIA_STATE_DIR",
+      "PRONETHEIA_CONFIG_PATH",
+      "PRONETHEIA_GATEWAY_PORT",
+      "PRONETHEIA_PROFILE",
     ]);
-    process.env.OPENCLAW_STATE_DIR = "/tmp/openclaw-cli-state";
-    process.env.OPENCLAW_CONFIG_PATH = "/tmp/openclaw-cli-state/openclaw.json";
-    delete process.env.OPENCLAW_GATEWAY_PORT;
-    delete process.env.OPENCLAW_PROFILE;
+    process.env.PRONETHEIA_STATE_DIR = "/tmp/openclaw-cli-state";
+    process.env.PRONETHEIA_CONFIG_PATH = "/tmp/openclaw-cli-state/openclaw.json";
+    delete process.env.PRONETHEIA_GATEWAY_PORT;
+    delete process.env.PRONETHEIA_PROFILE;
     serviceReadCommand.mockResolvedValue(null);
   });
 
@@ -133,12 +133,12 @@ describe("daemon-cli coverage", () => {
     serviceReadCommand.mockResolvedValueOnce({
       programArguments: ["/bin/node", "cli", "gateway", "--port", "19001"],
       environment: {
-        OPENCLAW_PROFILE: "dev",
-        OPENCLAW_STATE_DIR: "/tmp/openclaw-daemon-state",
-        OPENCLAW_CONFIG_PATH: "/tmp/openclaw-daemon-state/openclaw.json",
-        OPENCLAW_GATEWAY_PORT: "19001",
+        PRONETHEIA_PROFILE: "dev",
+        PRONETHEIA_STATE_DIR: "/tmp/openclaw-daemon-state",
+        PRONETHEIA_CONFIG_PATH: "/tmp/openclaw-daemon-state/openclaw.json",
+        PRONETHEIA_GATEWAY_PORT: "19001",
       },
-      sourcePath: "/tmp/ai.openclaw.gateway.plist",
+      sourcePath: "/tmp/ai.pronetheia.gateway.plist",
     });
 
     await runDaemonCommand(["daemon", "status", "--json"]);

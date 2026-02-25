@@ -50,9 +50,9 @@ describe("watch-node script", () => {
         stdio: "inherit",
         env: expect.objectContaining({
           PATH: "/usr/bin",
-          OPENCLAW_WATCH_MODE: "1",
-          OPENCLAW_WATCH_SESSION: "1700000000000-4242",
-          OPENCLAW_WATCH_COMMAND: "gateway --force",
+          PRONETHEIA_WATCH_MODE: "1",
+          PRONETHEIA_WATCH_SESSION: "1700000000000-4242",
+          PRONETHEIA_WATCH_COMMAND: "gateway --force",
         }),
       }),
     );

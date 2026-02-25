@@ -182,8 +182,8 @@ afterAll(async () => {
 });
 
 beforeEach(() => {
-  delete process.env.OPENCLAW_GATEWAY_TOKEN;
-  delete process.env.OPENCLAW_GATEWAY_PASSWORD;
+  delete process.env.PRONETHEIA_GATEWAY_TOKEN;
+  delete process.env.PRONETHEIA_GATEWAY_PASSWORD;
   pluginHttpHandlers = [];
   cfg = {};
   lastCreateOpenClawToolsContext = undefined;

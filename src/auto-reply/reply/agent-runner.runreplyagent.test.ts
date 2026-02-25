@@ -87,7 +87,7 @@ beforeEach(() => {
   state.runEmbeddedPiAgentMock.mockClear();
   state.runCliAgentMock.mockClear();
   vi.mocked(enqueueFollowupRun).mockClear();
-  vi.stubEnv("OPENCLAW_TEST_FAST", "1");
+  vi.stubEnv("PRONETHEIA_TEST_FAST", "1");
 });
 
 function createMinimalRun(params?: {

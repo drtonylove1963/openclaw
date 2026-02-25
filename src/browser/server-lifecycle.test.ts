@@ -99,7 +99,7 @@ describe("stopKnownBrowserProfiles", () => {
       onWarn,
     });
 
-    expect(stopMap.openclaw).toHaveBeenCalledTimes(1);
+    expect(stopMap.pronetheia).toHaveBeenCalledTimes(1);
     expect(stopMap.chrome).toHaveBeenCalledTimes(1);
     expect(onWarn).not.toHaveBeenCalled();
   });

@@ -6,7 +6,7 @@ import {
 } from "./redact-snapshot.js";
 import { __test__ } from "./schema.hints.js";
 import type { ConfigUiHints } from "./schema.js";
-import type { ConfigFileSnapshot } from "./types.openclaw.js";
+import type { ConfigFileSnapshot } from "./types.pronetheia.js";
 import { OpenClawSchema } from "./zod-schema.js";
 
 const { mapSensitivePaths } = __test__;
@@ -22,7 +22,7 @@ function makeSnapshot<TConfig extends Record<string, unknown>>(
   raw?: string,
 ): TestSnapshot<TConfig> {
   return {
-    path: "/home/user/.openclaw/config.json5",
+    path: "/home/user/.pronetheia/config.json5",
     exists: true,
     raw: raw ?? JSON.stringify(config),
     parsed: config,

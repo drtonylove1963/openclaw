@@ -1,10 +1,10 @@
 // Default service labels (canonical + legacy compatibility)
-export const GATEWAY_LAUNCH_AGENT_LABEL = "ai.openclaw.gateway";
+export const GATEWAY_LAUNCH_AGENT_LABEL = "ai.pronetheia.gateway";
 export const GATEWAY_SYSTEMD_SERVICE_NAME = "openclaw-gateway";
 export const GATEWAY_WINDOWS_TASK_NAME = "OpenClaw Gateway";
 export const GATEWAY_SERVICE_MARKER = "openclaw";
 export const GATEWAY_SERVICE_KIND = "gateway";
-export const NODE_LAUNCH_AGENT_LABEL = "ai.openclaw.node";
+export const NODE_LAUNCH_AGENT_LABEL = "ai.pronetheia.node";
 export const NODE_SYSTEMD_SERVICE_NAME = "openclaw-node";
 export const NODE_WINDOWS_TASK_NAME = "OpenClaw Node";
 export const NODE_SERVICE_MARKER = "openclaw";
@@ -35,7 +35,7 @@ export function resolveGatewayLaunchAgentLabel(profile?: string): string {
   if (!normalized) {
     return GATEWAY_LAUNCH_AGENT_LABEL;
   }
-  return `ai.openclaw.${normalized}`;
+  return `ai.pronetheia.${normalized}`;
 }
 
 export function resolveLegacyGatewayLaunchAgentLabels(profile?: string): string[] {
@@ -86,8 +86,8 @@ export function resolveGatewayServiceDescription(params: {
   return (
     params.description ??
     formatGatewayServiceDescription({
-      profile: params.env.OPENCLAW_PROFILE,
-      version: params.environment?.OPENCLAW_SERVICE_VERSION ?? params.env.OPENCLAW_SERVICE_VERSION,
+      profile: params.env.PRONETHEIA_PROFILE,
+      version: params.environment?.PRONETHEIA_SERVICE_VERSION ?? params.env.PRONETHEIA_SERVICE_VERSION,
     })
   );
 }

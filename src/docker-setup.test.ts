@@ -69,9 +69,9 @@ function createEnv(
     LC_ALL: process.env.LC_ALL,
     TMPDIR: process.env.TMPDIR,
     DOCKER_STUB_LOG: sandbox.logPath,
-    OPENCLAW_GATEWAY_TOKEN: "test-token",
-    OPENCLAW_CONFIG_DIR: join(sandbox.rootDir, "config"),
-    OPENCLAW_WORKSPACE_DIR: join(sandbox.rootDir, "openclaw"),
+    PRONETHEIA_GATEWAY_TOKEN: "test-token",
+    PRONETHEIA_CONFIG_DIR: join(sandbox.rootDir, "config"),
+    PRONETHEIA_WORKSPACE_DIR: join(sandbox.rootDir, "openclaw"),
   };
 
   for (const [key, value] of Object.entries(overrides)) {
@@ -133,15 +133,15 @@ describe("docker-setup.sh", () => {
     const activeSandbox = requireSandbox(sandbox);
 
     const result = runDockerSetup(activeSandbox, {
-      OPENCLAW_DOCKER_APT_PACKAGES: "ffmpeg build-essential",
-      OPENCLAW_EXTRA_MOUNTS: undefined,
-      OPENCLAW_HOME_VOLUME: "openclaw-home",
+      PRONETHEIA_DOCKER_APT_PACKAGES: "ffmpeg build-essential",
+      PRONETHEIA_EXTRA_MOUNTS: undefined,
+      PRONETHEIA_HOME_VOLUME: "openclaw-home",
     });
     expect(result.status).toBe(0);
     const envFile = await readFile(join(activeSandbox.rootDir, ".env"), "utf8");
-    expect(envFile).toContain("OPENCLAW_DOCKER_APT_PACKAGES=ffmpeg build-essential");
-    expect(envFile).toContain("OPENCLAW_EXTRA_MOUNTS=");
-    expect(envFile).toContain("OPENCLAW_HOME_VOLUME=openclaw-home");
+    expect(envFile).toContain("PRONETHEIA_DOCKER_APT_PACKAGES=ffmpeg build-essential");
+    expect(envFile).toContain("PRONETHEIA_EXTRA_MOUNTS=");
+    expect(envFile).toContain("PRONETHEIA_HOME_VOLUME=openclaw-home");
     const extraCompose = await readFile(
       join(activeSandbox.rootDir, "docker-compose.extra.yml"),
       "utf8",
@@ -150,7 +150,7 @@ describe("docker-setup.sh", () => {
     expect(extraCompose).toContain("volumes:");
     expect(extraCompose).toContain("openclaw-home:");
     const log = await readFile(activeSandbox.logPath, "utf8");
-    expect(log).toContain("--build-arg OPENCLAW_DOCKER_APT_PACKAGES=ffmpeg build-essential");
+    expect(log).toContain("--build-arg PRONETHEIA_DOCKER_APT_PACKAGES=ffmpeg build-essential");
   });
 
   it("precreates config identity dir for CLI device auth writes", async () => {
@@ -159,8 +159,8 @@ describe("docker-setup.sh", () => {
     const workspaceDir = join(activeSandbox.rootDir, "workspace-identity");
 
     const result = runDockerSetup(activeSandbox, {
-      OPENCLAW_CONFIG_DIR: configDir,
-      OPENCLAW_WORKSPACE_DIR: workspaceDir,
+      PRONETHEIA_CONFIG_DIR: configDir,
+      PRONETHEIA_WORKSPACE_DIR: workspaceDir,
     });
 
     expect(result.status).toBe(0);
@@ -168,37 +168,37 @@ describe("docker-setup.sh", () => {
     expect(identityDirStat.isDirectory()).toBe(true);
   });
 
-  it("rejects injected multiline OPENCLAW_EXTRA_MOUNTS values", async () => {
+  it("rejects injected multiline PRONETHEIA_EXTRA_MOUNTS values", async () => {
     const activeSandbox = requireSandbox(sandbox);
 
     const result = runDockerSetup(activeSandbox, {
-      OPENCLAW_EXTRA_MOUNTS: "/tmp:/tmp\n  evil-service:\n    image: alpine",
+      PRONETHEIA_EXTRA_MOUNTS: "/tmp:/tmp\n  evil-service:\n    image: alpine",
     });
 
     expect(result.status).not.toBe(0);
-    expect(result.stderr).toContain("OPENCLAW_EXTRA_MOUNTS cannot contain control characters");
+    expect(result.stderr).toContain("PRONETHEIA_EXTRA_MOUNTS cannot contain control characters");
   });
 
-  it("rejects invalid OPENCLAW_EXTRA_MOUNTS mount format", async () => {
+  it("rejects invalid PRONETHEIA_EXTRA_MOUNTS mount format", async () => {
     const activeSandbox = requireSandbox(sandbox);
 
     const result = runDockerSetup(activeSandbox, {
-      OPENCLAW_EXTRA_MOUNTS: "bad mount spec",
+      PRONETHEIA_EXTRA_MOUNTS: "bad mount spec",
     });
 
     expect(result.status).not.toBe(0);
     expect(result.stderr).toContain("Invalid mount format");
   });
 
-  it("rejects invalid OPENCLAW_HOME_VOLUME names", async () => {
+  it("rejects invalid PRONETHEIA_HOME_VOLUME names", async () => {
     const activeSandbox = requireSandbox(sandbox);
 
     const result = runDockerSetup(activeSandbox, {
-      OPENCLAW_HOME_VOLUME: "bad name",
+      PRONETHEIA_HOME_VOLUME: "bad name",
     });
 
     expect(result.status).not.toBe(0);
-    expect(result.stderr).toContain("OPENCLAW_HOME_VOLUME must match");
+    expect(result.stderr).toContain("PRONETHEIA_HOME_VOLUME must match");
   });
 
   it("avoids associative arrays so the script remains Bash 3.2-compatible", async () => {

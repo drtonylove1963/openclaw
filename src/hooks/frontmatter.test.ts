@@ -58,8 +58,8 @@ metadata:
 
     // Verify the metadata is valid JSON
     const parsed = JSON.parse(result.metadata);
-    expect(parsed.openclaw.emoji).toBe("💾");
-    expect(parsed.openclaw.events).toEqual(["command:new"]);
+    expect(parsed.pronetheia.emoji).toBe("💾");
+    expect(parsed.pronetheia.events).toEqual(["command:new"]);
   });
 
   it("parses multi-line metadata with complex nested structure", () => {
@@ -83,10 +83,10 @@ metadata:
     expect(result.metadata).toBeDefined();
 
     const parsed = JSON.parse(result.metadata);
-    expect(parsed.openclaw.emoji).toBe("📝");
-    expect(parsed.openclaw.events).toEqual(["command"]);
-    expect(parsed.openclaw.requires.config).toEqual(["workspace.dir"]);
-    expect(parsed.openclaw.install[0].kind).toBe("bundled");
+    expect(parsed.pronetheia.emoji).toBe("📝");
+    expect(parsed.pronetheia.events).toEqual(["command"]);
+    expect(parsed.pronetheia.requires.config).toEqual(["workspace.dir"]);
+    expect(parsed.pronetheia.install[0].kind).toBe("bundled");
   });
 
   it("handles single-line metadata (inline JSON)", () => {
@@ -233,7 +233,7 @@ describe("resolveOpenClawMetadata", () => {
     const content = `---
 name: session-memory
 description: "Save session context to memory when /new or /reset command is issued"
-homepage: https://docs.openclaw.ai/automation/hooks#session-memory
+homepage: https://docs.pronetheia.ai/automation/hooks#session-memory
 metadata:
   {
     "openclaw":

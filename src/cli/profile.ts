@@ -94,7 +94,7 @@ function resolveProfileStateDir(
   homedir: () => string,
 ): string {
   const suffix = profile.toLowerCase() === "default" ? "" : `-${profile}`;
-  return path.join(resolveRequiredHomeDir(env as NodeJS.ProcessEnv, homedir), `.openclaw${suffix}`);
+  return path.join(resolveRequiredHomeDir(env as NodeJS.ProcessEnv, homedir), `.pronetheia${suffix}`);
 }
 
 export function applyCliProfileEnv(params: {
@@ -110,18 +110,18 @@ export function applyCliProfileEnv(params: {
   }
 
   // Convenience only: fill defaults, never override explicit env values.
-  env.OPENCLAW_PROFILE = profile;
+  env.PRONETHEIA_PROFILE = profile;
 
-  const stateDir = env.OPENCLAW_STATE_DIR?.trim() || resolveProfileStateDir(profile, env, homedir);
-  if (!env.OPENCLAW_STATE_DIR?.trim()) {
-    env.OPENCLAW_STATE_DIR = stateDir;
+  const stateDir = env.PRONETHEIA_STATE_DIR?.trim() || resolveProfileStateDir(profile, env, homedir);
+  if (!env.PRONETHEIA_STATE_DIR?.trim()) {
+    env.PRONETHEIA_STATE_DIR = stateDir;
   }
 
-  if (!env.OPENCLAW_CONFIG_PATH?.trim()) {
-    env.OPENCLAW_CONFIG_PATH = path.join(stateDir, "openclaw.json");
+  if (!env.PRONETHEIA_CONFIG_PATH?.trim()) {
+    env.PRONETHEIA_CONFIG_PATH = path.join(stateDir, "openclaw.json");
   }
 
-  if (profile === "dev" && !env.OPENCLAW_GATEWAY_PORT?.trim()) {
-    env.OPENCLAW_GATEWAY_PORT = "19001";
+  if (profile === "dev" && !env.PRONETHEIA_GATEWAY_PORT?.trim()) {
+    env.PRONETHEIA_GATEWAY_PORT = "19001";
   }
 }

@@ -27,7 +27,7 @@ const EXTRA_MARKERS = ["openclaw", "clawdbot", "moltbot"] as const;
 export function renderGatewayServiceCleanupHints(
   env: Record<string, string | undefined> = process.env as Record<string, string | undefined>,
 ): string[] {
-  const profile = env.OPENCLAW_PROFILE;
+  const profile = env.PRONETHEIA_PROFILE;
   switch (process.platform) {
     case "darwin": {
       const label = resolveGatewayLaunchAgentLabel(profile);
@@ -93,7 +93,7 @@ function isOpenClawGatewayLaunchdService(label: string, contents: string): boole
   if (!lowerContents.includes("gateway")) {
     return false;
   }
-  return label.startsWith("ai.openclaw.");
+  return label.startsWith("ai.pronetheia.");
 }
 
 function isOpenClawGatewaySystemdService(name: string, contents: string): boolean {

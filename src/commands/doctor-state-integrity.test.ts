@@ -13,17 +13,17 @@ vi.mock("../terminal/note.js", () => ({
 
 type EnvSnapshot = {
   HOME?: string;
-  OPENCLAW_HOME?: string;
-  OPENCLAW_STATE_DIR?: string;
-  OPENCLAW_OAUTH_DIR?: string;
+  PRONETHEIA_HOME?: string;
+  PRONETHEIA_STATE_DIR?: string;
+  PRONETHEIA_OAUTH_DIR?: string;
 };
 
 function captureEnv(): EnvSnapshot {
   return {
     HOME: process.env.HOME,
-    OPENCLAW_HOME: process.env.OPENCLAW_HOME,
-    OPENCLAW_STATE_DIR: process.env.OPENCLAW_STATE_DIR,
-    OPENCLAW_OAUTH_DIR: process.env.OPENCLAW_OAUTH_DIR,
+    PRONETHEIA_HOME: process.env.PRONETHEIA_HOME,
+    PRONETHEIA_STATE_DIR: process.env.PRONETHEIA_STATE_DIR,
+    PRONETHEIA_OAUTH_DIR: process.env.PRONETHEIA_OAUTH_DIR,
   };
 }
 
@@ -73,10 +73,10 @@ describe("doctor state integrity oauth dir checks", () => {
     envSnapshot = captureEnv();
     tempHome = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-doctor-state-integrity-"));
     process.env.HOME = tempHome;
-    process.env.OPENCLAW_HOME = tempHome;
-    process.env.OPENCLAW_STATE_DIR = path.join(tempHome, ".openclaw");
-    delete process.env.OPENCLAW_OAUTH_DIR;
-    fs.mkdirSync(process.env.OPENCLAW_STATE_DIR, { recursive: true, mode: 0o700 });
+    process.env.PRONETHEIA_HOME = tempHome;
+    process.env.PRONETHEIA_STATE_DIR = path.join(tempHome, ".pronetheia");
+    delete process.env.PRONETHEIA_OAUTH_DIR;
+    fs.mkdirSync(process.env.PRONETHEIA_STATE_DIR, { recursive: true, mode: 0o700 });
     vi.mocked(note).mockClear();
   });
 
@@ -117,8 +117,8 @@ describe("doctor state integrity oauth dir checks", () => {
     expect(confirmSkipInNonInteractive).toHaveBeenCalledWith(OAUTH_PROMPT_MATCHER);
   });
 
-  it("prompts for oauth dir when OPENCLAW_OAUTH_DIR is explicitly configured", async () => {
-    process.env.OPENCLAW_OAUTH_DIR = path.join(tempHome, ".oauth");
+  it("prompts for oauth dir when PRONETHEIA_OAUTH_DIR is explicitly configured", async () => {
+    process.env.PRONETHEIA_OAUTH_DIR = path.join(tempHome, ".oauth");
     const cfg: OpenClawConfig = {};
     const confirmSkipInNonInteractive = await runStateIntegrity(cfg);
     expect(confirmSkipInNonInteractive).toHaveBeenCalledWith(OAUTH_PROMPT_MATCHER);

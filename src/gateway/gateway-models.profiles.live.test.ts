@@ -32,10 +32,10 @@ import { hasExpectedToolNonce, shouldRetryToolReadProbe } from "./live-tool-prob
 import { startGatewayServer } from "./server.js";
 import { extractPayloadText } from "./test-helpers.agent-results.js";
 
-const LIVE = isTruthyEnvValue(process.env.LIVE) || isTruthyEnvValue(process.env.OPENCLAW_LIVE_TEST);
-const GATEWAY_LIVE = isTruthyEnvValue(process.env.OPENCLAW_LIVE_GATEWAY);
-const ZAI_FALLBACK = isTruthyEnvValue(process.env.OPENCLAW_LIVE_GATEWAY_ZAI_FALLBACK);
-const PROVIDERS = parseFilter(process.env.OPENCLAW_LIVE_GATEWAY_PROVIDERS);
+const LIVE = isTruthyEnvValue(process.env.LIVE) || isTruthyEnvValue(process.env.PRONETHEIA_LIVE_TEST);
+const GATEWAY_LIVE = isTruthyEnvValue(process.env.PRONETHEIA_LIVE_GATEWAY);
+const ZAI_FALLBACK = isTruthyEnvValue(process.env.PRONETHEIA_LIVE_GATEWAY_ZAI_FALLBACK);
+const PROVIDERS = parseFilter(process.env.PRONETHEIA_LIVE_GATEWAY_PROVIDERS);
 const THINKING_LEVEL = "high";
 const THINKING_TAG_RE = /<\s*\/?\s*(?:think(?:ing)?|thought|antthinking)\s*>/i;
 const FINAL_TAG_RE = /<\s*\/?\s*final\s*>/i;
@@ -566,26 +566,26 @@ function buildMinimaxProviderOverride(params: {
 
 async function runGatewayModelSuite(params: GatewayModelSuiteParams) {
   const previous = {
-    configPath: process.env.OPENCLAW_CONFIG_PATH,
-    token: process.env.OPENCLAW_GATEWAY_TOKEN,
-    skipChannels: process.env.OPENCLAW_SKIP_CHANNELS,
-    skipGmail: process.env.OPENCLAW_SKIP_GMAIL_WATCHER,
-    skipCron: process.env.OPENCLAW_SKIP_CRON,
-    skipCanvas: process.env.OPENCLAW_SKIP_CANVAS_HOST,
-    agentDir: process.env.OPENCLAW_AGENT_DIR,
+    configPath: process.env.PRONETHEIA_CONFIG_PATH,
+    token: process.env.PRONETHEIA_GATEWAY_TOKEN,
+    skipChannels: process.env.PRONETHEIA_SKIP_CHANNELS,
+    skipGmail: process.env.PRONETHEIA_SKIP_GMAIL_WATCHER,
+    skipCron: process.env.PRONETHEIA_SKIP_CRON,
+    skipCanvas: process.env.PRONETHEIA_SKIP_CANVAS_HOST,
+    agentDir: process.env.PRONETHEIA_AGENT_DIR,
     piAgentDir: process.env.PI_CODING_AGENT_DIR,
-    stateDir: process.env.OPENCLAW_STATE_DIR,
+    stateDir: process.env.PRONETHEIA_STATE_DIR,
   };
   let tempAgentDir: string | undefined;
   let tempStateDir: string | undefined;
 
-  process.env.OPENCLAW_SKIP_CHANNELS = "1";
-  process.env.OPENCLAW_SKIP_GMAIL_WATCHER = "1";
-  process.env.OPENCLAW_SKIP_CRON = "1";
-  process.env.OPENCLAW_SKIP_CANVAS_HOST = "1";
+  process.env.PRONETHEIA_SKIP_CHANNELS = "1";
+  process.env.PRONETHEIA_SKIP_GMAIL_WATCHER = "1";
+  process.env.PRONETHEIA_SKIP_CRON = "1";
+  process.env.PRONETHEIA_SKIP_CANVAS_HOST = "1";
 
   const token = `test-${randomUUID()}`;
-  process.env.OPENCLAW_GATEWAY_TOKEN = token;
+  process.env.PRONETHEIA_GATEWAY_TOKEN = token;
   const agentId = "dev";
 
   const hostAgentDir = resolveOpenClawAgentDir();
@@ -602,21 +602,21 @@ async function runGatewayModelSuite(params: GatewayModelSuiteParams) {
     usageStats: hostStore.usageStats ? { ...hostStore.usageStats } : undefined,
   };
   tempStateDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-live-state-"));
-  process.env.OPENCLAW_STATE_DIR = tempStateDir;
+  process.env.PRONETHEIA_STATE_DIR = tempStateDir;
   tempAgentDir = path.join(tempStateDir, "agents", DEFAULT_AGENT_ID, "agent");
   saveAuthProfileStore(sanitizedStore, tempAgentDir);
   const tempSessionAgentDir = path.join(tempStateDir, "agents", agentId, "agent");
   if (tempSessionAgentDir !== tempAgentDir) {
     saveAuthProfileStore(sanitizedStore, tempSessionAgentDir);
   }
-  process.env.OPENCLAW_AGENT_DIR = tempAgentDir;
+  process.env.PRONETHEIA_AGENT_DIR = tempAgentDir;
   process.env.PI_CODING_AGENT_DIR = tempAgentDir;
 
   const workspaceDir = resolveAgentWorkspaceDir(params.cfg, agentId);
   await fs.mkdir(workspaceDir, { recursive: true });
   const nonceA = randomUUID();
   const nonceB = randomUUID();
-  const toolProbePath = path.join(workspaceDir, `.openclaw-live-tool-probe.${nonceA}.txt`);
+  const toolProbePath = path.join(workspaceDir, `.pronetheia-live-tool-probe.${nonceA}.txt`);
   await fs.writeFile(toolProbePath, `nonceA=${nonceA}\nnonceB=${nonceB}\n`);
 
   const agentDir = resolveOpenClawAgentDir();
@@ -632,7 +632,7 @@ async function runGatewayModelSuite(params: GatewayModelSuiteParams) {
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-live-"));
   const tempConfigPath = path.join(tempDir, "openclaw.json");
   await fs.writeFile(tempConfigPath, `${JSON.stringify(nextCfg, null, 2)}\n`);
-  process.env.OPENCLAW_CONFIG_PATH = tempConfigPath;
+  process.env.PRONETHEIA_CONFIG_PATH = tempConfigPath;
 
   await ensureOpenClawModelsJson(nextCfg);
 
@@ -1113,15 +1113,15 @@ async function runGatewayModelSuite(params: GatewayModelSuiteParams) {
       await fs.rm(tempStateDir, { recursive: true, force: true });
     }
 
-    process.env.OPENCLAW_CONFIG_PATH = previous.configPath;
-    process.env.OPENCLAW_GATEWAY_TOKEN = previous.token;
-    process.env.OPENCLAW_SKIP_CHANNELS = previous.skipChannels;
-    process.env.OPENCLAW_SKIP_GMAIL_WATCHER = previous.skipGmail;
-    process.env.OPENCLAW_SKIP_CRON = previous.skipCron;
-    process.env.OPENCLAW_SKIP_CANVAS_HOST = previous.skipCanvas;
-    process.env.OPENCLAW_AGENT_DIR = previous.agentDir;
+    process.env.PRONETHEIA_CONFIG_PATH = previous.configPath;
+    process.env.PRONETHEIA_GATEWAY_TOKEN = previous.token;
+    process.env.PRONETHEIA_SKIP_CHANNELS = previous.skipChannels;
+    process.env.PRONETHEIA_SKIP_GMAIL_WATCHER = previous.skipGmail;
+    process.env.PRONETHEIA_SKIP_CRON = previous.skipCron;
+    process.env.PRONETHEIA_SKIP_CANVAS_HOST = previous.skipCanvas;
+    process.env.PRONETHEIA_AGENT_DIR = previous.agentDir;
     process.env.PI_CODING_AGENT_DIR = previous.piAgentDir;
-    process.env.OPENCLAW_STATE_DIR = previous.stateDir;
+    process.env.PRONETHEIA_STATE_DIR = previous.stateDir;
   }
 }
 
@@ -1140,11 +1140,11 @@ describeLive("gateway live (dev agent, profile keys)", () => {
       const modelRegistry = discoverModels(authStorage, agentDir);
       const all = modelRegistry.getAll();
 
-      const rawModels = process.env.OPENCLAW_LIVE_GATEWAY_MODELS?.trim();
+      const rawModels = process.env.PRONETHEIA_LIVE_GATEWAY_MODELS?.trim();
       const useModern = !rawModels || rawModels === "modern" || rawModels === "all";
       const useExplicit = Boolean(rawModels) && !useModern;
       const filter = useExplicit ? parseFilter(rawModels) : null;
-      const maxModels = toInt(process.env.OPENCLAW_LIVE_GATEWAY_MAX_MODELS, 0);
+      const maxModels = toInt(process.env.PRONETHEIA_LIVE_GATEWAY_MAX_MODELS, 0);
       const wanted = filter
         ? all.filter((m) => filter.has(`${m.provider}/${m.id}`))
         : all.filter((m) => isModernModelRef({ provider: m.provider, id: m.id }));
@@ -1183,7 +1183,7 @@ describeLive("gateway live (dev agent, profile keys)", () => {
       logProgress(`[all-models] selection=${useExplicit ? "explicit" : "modern"}`);
       if (selectedCandidates.length < candidates.length) {
         logProgress(
-          `[all-models] capped to ${selectedCandidates.length}/${candidates.length} via OPENCLAW_LIVE_GATEWAY_MAX_MODELS=${maxModels}`,
+          `[all-models] capped to ${selectedCandidates.length}/${candidates.length} via PRONETHEIA_LIVE_GATEWAY_MAX_MODELS=${maxModels}`,
         );
       }
       const imageCandidates = selectedCandidates.filter((m) => m.input?.includes("image"));
@@ -1232,21 +1232,21 @@ describeLive("gateway live (dev agent, profile keys)", () => {
       return;
     }
     const previous = {
-      configPath: process.env.OPENCLAW_CONFIG_PATH,
-      token: process.env.OPENCLAW_GATEWAY_TOKEN,
-      skipChannels: process.env.OPENCLAW_SKIP_CHANNELS,
-      skipGmail: process.env.OPENCLAW_SKIP_GMAIL_WATCHER,
-      skipCron: process.env.OPENCLAW_SKIP_CRON,
-      skipCanvas: process.env.OPENCLAW_SKIP_CANVAS_HOST,
+      configPath: process.env.PRONETHEIA_CONFIG_PATH,
+      token: process.env.PRONETHEIA_GATEWAY_TOKEN,
+      skipChannels: process.env.PRONETHEIA_SKIP_CHANNELS,
+      skipGmail: process.env.PRONETHEIA_SKIP_GMAIL_WATCHER,
+      skipCron: process.env.PRONETHEIA_SKIP_CRON,
+      skipCanvas: process.env.PRONETHEIA_SKIP_CANVAS_HOST,
     };
 
-    process.env.OPENCLAW_SKIP_CHANNELS = "1";
-    process.env.OPENCLAW_SKIP_GMAIL_WATCHER = "1";
-    process.env.OPENCLAW_SKIP_CRON = "1";
-    process.env.OPENCLAW_SKIP_CANVAS_HOST = "1";
+    process.env.PRONETHEIA_SKIP_CHANNELS = "1";
+    process.env.PRONETHEIA_SKIP_GMAIL_WATCHER = "1";
+    process.env.PRONETHEIA_SKIP_CRON = "1";
+    process.env.PRONETHEIA_SKIP_CANVAS_HOST = "1";
 
     const token = `test-${randomUUID()}`;
-    process.env.OPENCLAW_GATEWAY_TOKEN = token;
+    process.env.PRONETHEIA_GATEWAY_TOKEN = token;
 
     const cfg = loadConfig();
     await ensureOpenClawModelsJson(cfg);
@@ -1272,7 +1272,7 @@ describeLive("gateway live (dev agent, profile keys)", () => {
     await fs.mkdir(workspaceDir, { recursive: true });
     const nonceA = randomUUID();
     const nonceB = randomUUID();
-    const toolProbePath = path.join(workspaceDir, `.openclaw-live-zai-fallback.${nonceA}.txt`);
+    const toolProbePath = path.join(workspaceDir, `.pronetheia-live-zai-fallback.${nonceA}.txt`);
     await fs.writeFile(toolProbePath, `nonceA=${nonceA}\nnonceB=${nonceB}\n`);
 
     const port = await getFreeGatewayPort();
@@ -1363,12 +1363,12 @@ describeLive("gateway live (dev agent, profile keys)", () => {
       await server.close({ reason: "live test complete" });
       await fs.rm(toolProbePath, { force: true });
 
-      process.env.OPENCLAW_CONFIG_PATH = previous.configPath;
-      process.env.OPENCLAW_GATEWAY_TOKEN = previous.token;
-      process.env.OPENCLAW_SKIP_CHANNELS = previous.skipChannels;
-      process.env.OPENCLAW_SKIP_GMAIL_WATCHER = previous.skipGmail;
-      process.env.OPENCLAW_SKIP_CRON = previous.skipCron;
-      process.env.OPENCLAW_SKIP_CANVAS_HOST = previous.skipCanvas;
+      process.env.PRONETHEIA_CONFIG_PATH = previous.configPath;
+      process.env.PRONETHEIA_GATEWAY_TOKEN = previous.token;
+      process.env.PRONETHEIA_SKIP_CHANNELS = previous.skipChannels;
+      process.env.PRONETHEIA_SKIP_GMAIL_WATCHER = previous.skipGmail;
+      process.env.PRONETHEIA_SKIP_CRON = previous.skipCron;
+      process.env.PRONETHEIA_SKIP_CANVAS_HOST = previous.skipCanvas;
     }
   }, 180_000);
 });

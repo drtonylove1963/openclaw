@@ -15,7 +15,7 @@ export async function noteSecurityWarnings(cfg: OpenClawConfig) {
   if (cfg.approvals?.exec?.enabled === false) {
     warnings.push(
       "- Note: approvals.exec.enabled=false disables approval forwarding only.",
-      "  Host exec gating still comes from ~/.openclaw/exec-approvals.json.",
+      "  Host exec gating still comes from ~/.pronetheia/exec-approvals.json.",
       `  Check local policy with: ${formatCliCommand("openclaw approvals get --gateway")}`,
     );
   }
@@ -53,7 +53,7 @@ export async function noteSecurityWarnings(cfg: OpenClawConfig) {
   const saferRemoteAccessLines = [
     "  Safer remote access: keep bind loopback and use Tailscale Serve/Funnel or an SSH tunnel.",
     "  Example tunnel: ssh -N -L 18789:127.0.0.1:18789 user@gateway-host",
-    "  Docs: https://docs.openclaw.ai/gateway/remote",
+    "  Docs: https://docs.pronetheia.ai/gateway/remote",
   ];
 
   if (isExposed) {
