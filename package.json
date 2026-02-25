@@ -1,20 +1,20 @@
 {
-  "name": "openclaw",
+  "name": "pronetheia",
   "version": "2026.2.25",
-  "description": "Multi-channel AI gateway with extensible messaging integrations",
-  "keywords": [],
-  "homepage": "https://github.com/openclaw/openclaw#readme",
+  "description": "Pronetheia - Autonomous AI Agent Platform powered by Athena",
+  "keywords": ["ai", "agent", "autonomous", "llm", "athena"],
+  "homepage": "https://pronetheia.com",
   "bugs": {
-    "url": "https://github.com/openclaw/openclaw/issues"
+    "url": "http://gitlab.blueiq.cloud/root/pronetheia/issues"
   },
   "license": "MIT",
-  "author": "",
+  "author": "Dr. Tony Love",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openclaw/openclaw.git"
+    "url": "git@gitlab.blueiq.cloud:root/pronetheia.git"
   },
   "bin": {
-    "openclaw": "openclaw.mjs"
+    "pronetheia": "pronetheia.mjs"
   },
   "directories": {
     "doc": "docs",
@@ -23,7 +23,7 @@
   "files": [
     "CHANGELOG.md",
     "LICENSE",
-    "openclaw.mjs",
+    "pronetheia.mjs",
     "README-header.png",
     "README.md",
     "assets/",
@@ -44,7 +44,7 @@
       "types": "./dist/plugin-sdk/account-id.d.ts",
       "default": "./dist/plugin-sdk/account-id.js"
     },
-    "./cli-entry": "./openclaw.mjs"
+    "./cli-entry": "./pronetheia.mjs"
   },
   "scripts": {
     "android:assemble": "cd apps/android && ./gradlew :app:assembleDebug",
