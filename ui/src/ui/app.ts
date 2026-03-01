@@ -1,4 +1,6 @@
 import { LitElement } from "lit";
+import type { Mission, MissionStats } from "./views/missions.ts";
+import * as missionsApi from "./data/missions-api.ts";
 import { customElement, state } from "lit/decorators.js";
 import { i18n, I18nController, isSupportedLocale } from "../i18n/index.ts";
 import {
@@ -88,7 +90,7 @@ import type { NostrProfileFormState } from "./views/channels.nostr-profile-form.
 
 declare global {
   interface Window {
-    __OPENCLAW_CONTROL_UI_BASE_PATH__?: string;
+    __PRONETHEIA_CONTROL_UI_BASE_PATH__?: string;
   }
 }
 
@@ -367,6 +369,12 @@ export class PronetheiaApp extends LitElement {
   @state() logsLastFetchAt: number | null = null;
   @state() logsLimit = 500;
   @state() logsMaxBytes = 250_000;
+
+  // Missions state (Pronetheia Phase 5)
+  @state() missions: Mission[] = [];
+  @state() missionsStats: MissionStats | null = null;
+  @state() missionsLoading = false;
+  @state() missionsError: string | null = null;
   @state() logsAtBottom = true;
 
   client: GatewayBrowserClient | null = null;
@@ -433,6 +441,77 @@ export class PronetheiaApp extends LitElement {
     exportLogsInternal(lines, label);
   }
 
+
+  // Missions methods (Pronetheia Phase 5)
+  async loadMissions() {
+    this.missionsLoading = true;
+    this.missionsError = null;
+    try {
+      const [missions, stats] = await Promise.all([
+        missionsApi.listMissions(),
+        missionsApi.getMissionStats(),
+      ]);
+      this.missions = missions;
+      this.missionsStats = stats;
+    } catch (err) {
+      this.missionsError = err instanceof Error ? err.message : "Failed to load missions";
+    } finally {
+      this.missionsLoading = false;
+    }
+  }
+
+  showCreateMissionDialog() {
+    // TODO: Implement create mission dialog
+    const goal = prompt("Enter mission goal:");
+    if (goal) {
+      this.createMission(goal);
+    }
+  }
+
+  async createMission(goal: string) {
+    try {
+      await missionsApi.createMission({ goal, auto_plan: true, max_teams: 3 });
+      await this.loadMissions();
+    } catch (err) {
+      this.missionsError = err instanceof Error ? err.message : "Failed to create mission";
+    }
+  }
+
+  async launchMission(id: string) {
+    try {
+      await missionsApi.launchMission(id);
+      await this.loadMissions();
+    } catch (err) {
+      this.missionsError = err instanceof Error ? err.message : "Failed to launch mission";
+    }
+  }
+
+  async pauseMission(id: string) {
+    try {
+      await missionsApi.pauseMission(id);
+      await this.loadMissions();
+    } catch (err) {
+      this.missionsError = err instanceof Error ? err.message : "Failed to pause mission";
+    }
+  }
+
+  async resumeMission(id: string) {
+    try {
+      await missionsApi.resumeMission(id);
+      await this.loadMissions();
+    } catch (err) {
+      this.missionsError = err instanceof Error ? err.message : "Failed to resume mission";
+    }
+  }
+
+  async cancelMission(id: string) {
+    try {
+      await missionsApi.cancelMission(id);
+      await this.loadMissions();
+    } catch (err) {
+      this.missionsError = err instanceof Error ? err.message : "Failed to cancel mission";
+    }
+  }
   resetToolStream() {
     resetToolStreamInternal(this as unknown as Parameters<typeof resetToolStreamInternal>[0]);
   }

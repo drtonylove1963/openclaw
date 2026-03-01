@@ -2,7 +2,7 @@ import { t } from "../i18n/index.ts";
 import type { IconName } from "./icons.js";
 
 export const TAB_GROUPS = [
-  { label: "chat", tabs: ["chat"] },
+  { label: "pronetheia", tabs: ["chat", "missions"] },
   {
     label: "control",
     tabs: ["overview", "channels", "instances", "sessions", "usage", "cron"],
@@ -24,7 +24,8 @@ export type Tab =
   | "chat"
   | "config"
   | "debug"
-  | "logs";
+  | "logs"
+  | "missions";
 
 const TAB_PATHS: Record<Tab, string> = {
   agents: "/agents",
@@ -40,6 +41,7 @@ const TAB_PATHS: Record<Tab, string> = {
   config: "/config",
   debug: "/debug",
   logs: "/logs",
+  missions: "/missions",
 };
 
 const PATH_TO_TAB = new Map(Object.entries(TAB_PATHS).map(([tab, path]) => [path, tab as Tab]));
@@ -151,6 +153,8 @@ export function iconForTab(tab: Tab): IconName {
       return "bug";
     case "logs":
       return "scrollText";
+    case "missions":
+      return "zap";
     default:
       return "folder";
   }

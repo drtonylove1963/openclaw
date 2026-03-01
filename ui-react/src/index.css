@@ -1,0 +1,500 @@
+/* Import Libre Franklin - distinctive but professional (legacy) */
+@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&display=swap');
+
+/* Import mobile styles */
+@import './styles/mobile.css';
+
+/* Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================
+   Pronetheia Design System
+   Neutral Dark Theme (Letta-style)
+   ============================ */
+
+:root {
+  /* Primary palette - neutral dark (no blue tint) */
+  --color-bg: #09090b;
+  --color-bg-alt: #0f0f10;
+  --color-card: #141415;
+  --color-sidebar: #0f0f10;
+  --color-bg-hover: #1f1f23;
+  --color-bg-active: #27272a;
+
+  /* Accent colors - emerald primary */
+  --color-accent: #10b981;
+  --color-accent-light: #34d399;
+  --color-sage: #71717a;
+
+  /* Text */
+  --color-text: #fafafa;
+  --color-text-muted: #a1a1aa;
+  --color-text-dim: #71717a;
+
+  /* Borders */
+  --color-border: #27272a;
+  --color-border-focus: #3f3f46;
+
+  /* Status */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-info: #3b82f6;
+
+  /* Typography */
+  --font-family: 'Libre Franklin', 'Helvetica Neue', -apple-system, sans-serif;
+
+  /* Safe area insets for notched devices */
+  --sat: env(safe-area-inset-top, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+}
+
+/* Reset and base styles */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+  overflow: hidden;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Scrollbar styling - cobalt theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-alt);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-bg-active);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) var(--color-bg-alt);
+}
+
+/* Selection styling */
+::selection {
+  background-color: var(--color-accent);
+  color: white;
+}
+
+/* Focus styling */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ============================
+   ReactFlow Overrides
+   ============================ */
+
+.react-flow__renderer {
+  width: 100%;
+  height: 100%;
+}
+
+.react-flow__pane {
+  background-color: var(--color-bg) !important;
+}
+
+.react-flow__node {
+  cursor: grab;
+}
+
+.react-flow__node:active {
+  cursor: grabbing;
+}
+
+.react-flow__handle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  border: 2px solid var(--color-card);
+}
+
+.react-flow__handle:hover {
+  background-color: var(--color-accent-light);
+  transform: scale(1.2);
+}
+
+.react-flow__edge-path {
+  stroke: var(--color-border);
+  stroke-width: 2;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--color-accent);
+}
+
+.react-flow__controls {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.react-flow__controls-button {
+  background-color: var(--color-card);
+  border-color: var(--color-border);
+  color: var(--color-text);
+  width: 28px;
+  height: 28px;
+}
+
+.react-flow__controls-button:hover {
+  background-color: var(--color-bg-alt);
+}
+
+.react-flow__minimap {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
+
+.react-flow__background {
+  background-color: var(--color-bg);
+}
+
+/* ============================
+   Typography utilities
+   ============================ */
+
+.heading-1 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.heading-2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  line-height: 1.3;
+}
+
+.heading-3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.text-body {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.text-small {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+/* ============================
+   Button base styles
+   ============================ */
+
+button {
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ============================
+   Card styles
+   ============================ */
+
+.card {
+  background-color: var(--color-card);
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* ============================
+   Animation utilities
+   ============================ */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease;
+}
+
+/* ============================
+   Print styles
+   ============================ */
+
+@media print {
+  body {
+    background-color: white;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* ============================
+   Neural Interface Utilities
+   ============================ */
+
+/* Gradient text treatment */
+.ni-gradient-text {
+  background: linear-gradient(135deg, #00d4ff, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Shimmer gradient text (brand title) */
+.ni-shimmer-text {
+  background: linear-gradient(135deg, #00d4ff, #8b5cf6, #00d4ff);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.3));
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+/* Tricolor gradient text (memory title) */
+.ni-tricolor-text {
+  background: linear-gradient(135deg, #00d4ff, #8b5cf6, #f59e0b);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glass surface */
+.ni-glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ni-glass-hover:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Neural Interface scrollbars */
+.ni-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.ni-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 4px;
+}
+.ni-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.3);
+  border-radius: 4px;
+}
+
+/* ============================
+   Voice Interface Keyframes
+   (used by inline styles in voice components)
+   ============================ */
+
+@keyframes ripple-expand {
+  0% { width: 180px; height: 180px; opacity: 0.8; }
+  100% { width: 380px; height: 380px; opacity: 0; }
+}
+
+@keyframes orb-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes fade-in-out {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* Voice reduced motion overrides */
+@media (prefers-reduced-motion: reduce) {
+  .athena-orb *,
+  .voice-overlay * {
+    animation: none !important;
+    transition: background 300ms ease, opacity 300ms ease !important;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .ni-shimmer-text,
+  .ni-tricolor-text {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================
+   Mobile Responsive Utilities
+   ============================ */
+
+/* Mobile-first responsive padding */
+@media (max-width: 767px) {
+  .page-container {
+    padding: 16px !important;
+  }
+  
+  .page-header {
+    margin-bottom: 24px !important;
+  }
+  
+  .page-title {
+    font-size: 24px !important;
+  }
+  
+  /* Stack grids on mobile */
+  .responsive-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .responsive-grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Full width cards on mobile */
+  .responsive-card {
+    width: 100% !important;
+    margin-bottom: 16px;
+  }
+  
+  /* Reduce spacing on mobile */
+  .responsive-gap {
+    gap: 12px !important;
+  }
+  
+  /* Smaller buttons on mobile */
+  .responsive-button {
+    padding: 8px 16px !important;
+    font-size: 14px !important;
+  }
+  
+  /* Hide on mobile */
+  .hide-mobile {
+    display: none !important;
+  }
+  
+  /* Stack flex items */
+  .flex-mobile-stack {
+    flex-direction: column !important;
+  }
+  
+  /* Reduce orb sizes */
+  .orb-mobile-small {
+    width: 200px !important;
+    height: 200px !important;
+  }
+  
+  /* Safe area for notched devices */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top, 0) !important;
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0) !important;
+  }
+}
+
+/* Tablet breakpoint */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .responsive-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .page-container {
+    padding: 24px !important;
+  }
+}

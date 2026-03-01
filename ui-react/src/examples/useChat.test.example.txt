@@ -1,0 +1,204 @@
+/**
+ * useChat Hook Tests
+ * Tests for chat functionality including conversations and messages
+ */
+import { renderHook, act, waitFor } from '@testing-library/react';
+import { useChat } from '../useChat';
+import { chatService } from '../../services/chatService';
+
+// Mock the chat service
+jest.mock('../../services/chatService');
+
+const mockChatService = chatService as jest.Mocked<typeof chatService>;
+
+describe('useChat', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('loadConversations', () => {
+    it('should load conversations on mount', async () => {
+      const mockConversations = [
+        {
+          id: '1',
+          title: 'Test Conversation',
+          user_id: 'user1',
+          created_at: '2025-01-01T00:00:00Z',
+          updated_at: '2025-01-01T00:00:00Z',
+          message_count: 2,
+        },
+      ];
+
+      mockChatService.listConversations.mockResolvedValue(mockConversations);
+
+      const { result } = renderHook(() => useChat());
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(result.current.conversations).toEqual(mockConversations);
+      expect(mockChatService.listConversations).toHaveBeenCalled();
+    });
+
+    it('should handle load error', async () => {
+      mockChatService.listConversations.mockRejectedValue(new Error('Load failed'));
+
+      const { result } = renderHook(() => useChat());
+
+      await waitFor(() => {
+        expect(result.current.error).toBe('Load failed');
+      });
+    });
+  });
+
+  describe('createConversation', () => {
+    it('should create a new conversation', async () => {
+      const mockConversation = {
+        id: 'new-1',
+        title: 'New Conversation',
+        user_id: 'user1',
+        created_at: '2025-01-01T00:00:00Z',
+        updated_at: '2025-01-01T00:00:00Z',
+        message_count: 0,
+      };
+
+      const mockDetail = {
+        ...mockConversation,
+        messages: [],
+      };
+
+      mockChatService.listConversations.mockResolvedValue([]);
+      mockChatService.createConversation.mockResolvedValue(mockConversation);
+      mockChatService.getConversation.mockResolvedValue(mockDetail);
+
+      const { result } = renderHook(() => useChat());
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      let createdConversation;
+      await act(async () => {
+        createdConversation = await result.current.createConversation('New Conversation');
+      });
+
+      expect(createdConversation).toEqual(mockConversation);
+      expect(result.current.currentConversation).toEqual(mockDetail);
+    });
+  });
+
+  describe('sendMessage', () => {
+    it('should send a message and update conversation', async () => {
+      const mockConversation = {
+        id: 'conv-1',
+        title: 'Test',
+        user_id: 'user1',
+        created_at: '2025-01-01T00:00:00Z',
+        updated_at: '2025-01-01T00:00:00Z',
+        message_count: 0,
+      };
+
+      const mockDetail = {
+        ...mockConversation,
+        messages: [],
+      };
+
+      const mockResponse = {
+        message: {
+          id: 'msg-1',
+          conversation_id: 'conv-1',
+          role: 'user' as const,
+          content: 'Hello',
+          created_at: '2025-01-01T00:00:00Z',
+        },
+        conversation_id: 'conv-1',
+        assistant_message: {
+          id: 'msg-2',
+          conversation_id: 'conv-1',
+          role: 'assistant' as const,
+          content: 'Hi there!',
+          created_at: '2025-01-01T00:00:01Z',
+        },
+      };
+
+      mockChatService.listConversations.mockResolvedValue([mockConversation]);
+      mockChatService.getConversation.mockResolvedValue(mockDetail);
+      mockChatService.sendChatCompletion.mockResolvedValue(mockResponse);
+
+      const { result } = renderHook(() => useChat());
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      // Select conversation first
+      await act(async () => {
+        await result.current.selectConversation('conv-1');
+      });
+
+      // Send message
+      await act(async () => {
+        await result.current.sendMessage('Hello');
+      });
+
+      expect(result.current.currentConversation?.messages).toHaveLength(2);
+      expect(result.current.isSending).toBe(false);
+    });
+
+    it('should not send empty messages', async () => {
+      mockChatService.listConversations.mockResolvedValue([]);
+
+      const { result } = renderHook(() => useChat());
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      await act(async () => {
+        await result.current.sendMessage('   ');
+      });
+
+      expect(mockChatService.sendChatCompletion).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('deleteConversation', () => {
+    it('should delete a conversation', async () => {
+      const mockConversations = [
+        {
+          id: '1',
+          title: 'Test 1',
+          user_id: 'user1',
+          created_at: '2025-01-01T00:00:00Z',
+          updated_at: '2025-01-01T00:00:00Z',
+          message_count: 2,
+        },
+        {
+          id: '2',
+          title: 'Test 2',
+          user_id: 'user1',
+          created_at: '2025-01-01T00:00:00Z',
+          updated_at: '2025-01-01T00:00:00Z',
+          message_count: 3,
+        },
+      ];
+
+      mockChatService.listConversations.mockResolvedValue(mockConversations);
+      mockChatService.deleteConversation.mockResolvedValue();
+
+      const { result } = renderHook(() => useChat());
+
+      await waitFor(() => {
+        expect(result.current.conversations).toHaveLength(2);
+      });
+
+      await act(async () => {
+        await result.current.deleteConversation('1');
+      });
+
+      expect(result.current.conversations).toHaveLength(1);
+      expect(result.current.conversations[0].id).toBe('2');
+    });
+  });
+});

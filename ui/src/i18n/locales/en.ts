@@ -36,6 +36,7 @@ export const en: TranslationMap = {
     config: "Config",
     debug: "Debug",
     logs: "Logs",
+    missions: "Missions",
   },
   subtitles: {
     agents: "Manage agent workspaces, tools, and identities.",
@@ -48,6 +49,7 @@ export const en: TranslationMap = {
     skills: "Manage skill availability and API key injection.",
     nodes: "Paired devices, capabilities, and command exposure.",
     chat: "Direct gateway chat session for quick interventions.",
+    missions: "Parallel team orchestration for complex projects.",
     config: "Edit ~/.pronetheia/pronetheia.json safely.",
     debug: "Gateway snapshots, events, and manual RPC calls.",
     logs: "Live tail of the gateway file logs.",

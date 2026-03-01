@@ -1,4 +1,5 @@
 import type { EventLogEntry } from "./app-events.ts";
+import type { Mission, MissionStats } from "./views/missions.ts";
 import type { CompactionStatus, FallbackStatus } from "./app-tool-stream.ts";
 import type { CronFieldErrors } from "./controllers/cron.ts";
 import type { DevicePairingList } from "./controllers/devices.ts";
@@ -258,6 +259,17 @@ export type AppViewState = {
   logsLimit: number;
   logsMaxBytes: number;
   logsAtBottom: boolean;
+  // Missions state (Pronetheia Phase 5)
+  missions: Mission[];
+  missionsStats: MissionStats | null;
+  missionsLoading: boolean;
+  missionsError: string | null;
+  loadMissions: () => Promise<void>;
+  showCreateMissionDialog: () => void;
+  launchMission: (id: string) => Promise<void>;
+  pauseMission: (id: string) => Promise<void>;
+  resumeMission: (id: string) => Promise<void>;
+  cancelMission: (id: string) => Promise<void>;
   updateAvailable: import("./types.js").UpdateAvailable | null;
   client: GatewayBrowserClient | null;
   refreshSessionsAfterChat: Set<string>;

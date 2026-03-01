@@ -1,0 +1,84 @@
+/* Mobile-specific styles for Pronetheia OS */
+
+/* Safe area insets for notched devices */
+:root {
+  --sat: env(safe-area-inset-top, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+}
+
+/* Apply safe area insets to fixed elements */
+.mobile-safe-top {
+  padding-top: var(--sat);
+}
+
+.mobile-safe-bottom {
+  padding-bottom: var(--sab);
+}
+
+.mobile-safe-left {
+  padding-left: var(--sal);
+}
+
+.mobile-safe-right {
+  padding-right: var(--sar);
+}
+
+/* Prevent iOS Safari from zooming on input focus */
+@media (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  /* Optimize scrolling for touch devices */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Prevent text size adjustment on orientation change */
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  /* Remove tap highlight on mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Larger touch targets for better accessibility */
+  button, a, .interactive {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Active state for touch interactions */
+  .interactive:active {
+    transform: scale(0.98);
+    transition: transform 0.1s;
+  }
+  
+  /* Prevent zoom on double-tap */
+  button, a {
+    touch-action: manipulation;
+  }
+}
+
+/* Adjust for reduced motion users */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --bg-primary: #000000;
+    --bg-secondary: #111111;
+  }
+}

@@ -79,6 +79,7 @@ import { renderNodes } from "./views/nodes.ts";
 import { renderOverview } from "./views/overview.ts";
 import { renderSessions } from "./views/sessions.ts";
 import { renderSkills } from "./views/skills.ts";
+import { renderMissions } from "./views/missions.ts";
 
 const AVATAR_DATA_RE = /^data:/i;
 const AVATAR_HTTP_RE = /^https?:\/\//i;
@@ -236,7 +237,7 @@ export function renderApp(state: AppViewState) {
               <img src=${basePath ? `${basePath}/favicon.svg` : "/favicon.svg"} alt="Pronetheia" />
             </div>
             <div class="brand-text">
-              <div class="brand-title">OPENCLAW</div>
+              <div class="brand-title">PRONETHEIA</div>
               <div class="brand-sub">Gateway Dashboard</div>
             </div>
           </div>
@@ -1131,6 +1132,23 @@ export function renderApp(state: AppViewState) {
                 onRefresh: () => loadLogs(state, { reset: true }),
                 onExport: (lines, label) => state.exportLogs(lines, label),
                 onScroll: (event) => state.handleLogsScroll(event),
+              })
+            : nothing
+        }
+
+        ${
+          state.tab === "missions"
+            ? renderMissions({
+                missions: state.missions || [],
+                stats: state.missionsStats || null,
+                loading: state.missionsLoading || false,
+                error: state.missionsError || null,
+                onRefresh: () => state.loadMissions?.(),
+                onCreateMission: () => state.showCreateMissionDialog?.(),
+                onLaunchMission: (id) => state.launchMission?.(id),
+                onPauseMission: (id) => state.pauseMission?.(id),
+                onResumeMission: (id) => state.resumeMission?.(id),
+                onCancelMission: (id) => state.cancelMission?.(id),
               })
             : nothing
         }
