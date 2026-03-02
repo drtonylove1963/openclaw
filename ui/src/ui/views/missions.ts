@@ -3,53 +3,67 @@ import { repeat } from "lit/directives/repeat.js";
 import { icons } from "../icons.ts";
 
 // Mission types
-export type MissionStatus = 
-  | 'planning' 
-  | 'ready' 
-  | 'running' 
-  | 'paused' 
-  | 'completed' 
-  | 'failed' 
-  | 'cancelled';
+export type MissionStatus =
+  | "draft"
+  | "planning"
+  | "ready"
+  | "active"
+  | "running"
+  | "paused"
+  | "completed"
+  | "failed"
+  | "cancelled";
 
-export type TeamStatus = 
-  | 'pending' 
-  | 'waiting' 
-  | 'running' 
-  | 'blocked' 
-  | 'completed' 
-  | 'failed';
+export type TeamStatus =
+  | "pending"
+  | "waiting"
+  | "working"
+  | "running"
+  | "blocked"
+  | "completed"
+  | "failed";
 
 export interface Team {
   id: string;
   name: string;
+  role: string;
   mission: string;
   status: TeamStatus;
+  capabilities: string[];
   dependencies: string[];
   progress: number;
   artifacts: Artifact[];
+  current_task?: string;
   created_at: string;
+  started_at?: string;
+  completed_at?: string;
 }
 
 export interface Artifact {
+  id: string;
   name: string;
   type: string;
   path: string;
-  completeness: number;
-  ready_at: number | null;
+  size_bytes: number;
+  created_at: string;
 }
 
 export interface Mission {
   id: string;
+  name: string;
   goal: string;
+  objective: string;
   description: string | null;
   status: MissionStatus;
   plan: MissionPlan | null;
   teams: Team[];
+  progress: number;
   created_at: string;
   started_at: string | null;
+  launched_at?: string;
   completed_at: string | null;
   success: boolean | null;
+  config?: MissionConfig;
 }
 
 export interface MissionPlan {
@@ -67,53 +81,106 @@ export interface Workstream {
   dependencies: string[];
 }
 
+export interface MissionConfig {
+  max_duration_minutes?: number;
+  assistance_timeout_seconds?: number;
+  max_teams?: number;
+}
+
 export interface MissionStats {
-  total_missions: number;
-  active_missions: number;
-  completed_missions: number;
-  failed_missions: number;
-  total_teams: number;
-  active_teams: number;
-  total_artifacts: number;
-  average_efficiency: number;
+  launcher: {
+    active_missions: number;
+    active_teams: number;
+    message_bus: {
+      total_sent: number;
+      total_blocked: number;
+      active_subscribers: number;
+    };
+    artifact_streamer: {
+      total_published: number;
+      active_artifacts: number;
+    };
+    assistance_protocol: {
+      total_requests: number;
+      pending_requests: number;
+      response_rate: number;
+    };
+  };
+  total_missions?: number;
+  completed_missions?: number;
+  average_efficiency?: number;
+}
+
+export interface AssistanceRequest {
+  id: string;
+  team_id: string;
+  mission_id: string;
+  type: "decision" | "clarification" | "blocker" | "approval" | "review";
+  priority: "low" | "medium" | "high" | "critical";
+  question: string;
+  context?: string;
+  options?: { value: string; pros?: string[]; cons?: string[] }[];
+  status: "pending" | "responded" | "timeout";
+  created_at: string;
+  expires_at: string;
 }
 
 export interface MissionsProps {
   missions: Mission[];
   stats: MissionStats | null;
+  assistanceRequests: AssistanceRequest[];
   loading: boolean;
   error: string | null;
+  showCreateForm: boolean;
   onRefresh: () => void;
   onCreateMission: () => void;
+  onCancelCreate: () => void;
+  onSubmitMission: (mission: Partial<Mission>) => void;
   onLaunchMission: (id: string) => void;
   onPauseMission: (id: string) => void;
   onResumeMission: (id: string) => void;
   onCancelMission: (id: string) => void;
+  onViewMission: (id: string) => void;
+  onRespondToAssistance: (requestId: string, response: string) => void;
 }
 
 const STATUS_COLORS: Record<MissionStatus, string> = {
-  planning: '#8b5cf6',
-  ready: '#3b82f6',
-  running: '#f59e0b',
-  paused: '#6b7280',
-  completed: '#22c55e',
-  failed: '#ef4444',
-  cancelled: '#71717a',
+  draft: "#6b7280",
+  planning: "#8b5cf6",
+  ready: "#3b82f6",
+  active: "#f59e0b",
+  running: "#f59e0b",
+  paused: "#eab308",
+  completed: "#22c55e",
+  failed: "#ef4444",
+  cancelled: "#71717a",
 };
 
 const STATUS_ICONS: Record<MissionStatus, string> = {
-  planning: '📋',
-  ready: '⏳',
-  running: '⚡',
-  paused: '⏸️',
-  completed: '✅',
-  failed: '❌',
-  cancelled: '🚫',
+  draft: "📝",
+  planning: "📋",
+  ready: "⏳",
+  active: "⚡",
+  running: "⚡",
+  paused: "⏸️",
+  completed: "✅",
+  failed: "❌",
+  cancelled: "🚫",
+};
+
+const TEAM_STATUS_COLORS: Record<TeamStatus, string> = {
+  pending: "#6b7280",
+  waiting: "#eab308",
+  working: "#3b82f6",
+  running: "#3b82f6",
+  blocked: "#ef4444",
+  completed: "#22c55e",
+  failed: "#ef4444",
 };
 
 function renderStatusBadge(status: MissionStatus) {
-  const color = STATUS_COLORS[status] || STATUS_COLORS.planning;
-  const icon = STATUS_ICONS[status] || '📋';
+  const color = STATUS_COLORS[status] || STATUS_COLORS.draft;
+  const icon = STATUS_ICONS[status] || "📋";
   return html`
     <span
       class="mission-status-badge"
@@ -125,7 +192,7 @@ function renderStatusBadge(status: MissionStatus) {
   `;
 }
 
-function renderProgressBar(progress: number, color = '#00d4ff') {
+function renderProgressBar(progress: number, color = "#00d4ff") {
   return html`
     <div class="mission-progress-bar">
       <div
@@ -136,11 +203,134 @@ function renderProgressBar(progress: number, color = '#00d4ff') {
   `;
 }
 
-function renderStatCard(value: number, label: string, color: string) {
+function renderStatCard(value: number | string, label: string, color: string, icon?: string) {
   return html`
     <div class="mission-stat-card" style="background: ${color}12; border-color: ${color}25;">
+      ${icon ? html`<div class="mission-stat-icon">${icon}</div>` : nothing}
       <div class="mission-stat-value" style="color: ${color};">${value}</div>
       <div class="mission-stat-label">${label}</div>
+    </div>
+  `;
+}
+
+function renderTeamStatusDot(status: TeamStatus) {
+  const color = TEAM_STATUS_COLORS[status] || TEAM_STATUS_COLORS.pending;
+  return html`
+    <span class="team-status-dot" style="background: ${color};" title=${status}></span>
+  `;
+}
+
+function renderAssistanceRequest(
+  request: AssistanceRequest,
+  onRespond: (requestId: string, response: string) => void,
+) {
+  const priorityColors = {
+    low: "#6b7280",
+    medium: "#eab308",
+    high: "#f97316",
+    critical: "#ef4444",
+  };
+
+  const color = priorityColors[request.priority] || priorityColors.medium;
+
+  return html`
+    <div class="assistance-request-card">
+      <div class="assistance-header">
+        <span class="assistance-priority" style="background: ${color}22; color: ${color};">
+          ${request.priority.toUpperCase()}
+        </span>
+        <span class="assistance-type">${request.type}</span>
+        <span class="assistance-time">${new Date(request.created_at).toLocaleTimeString()}</span>
+      </div>
+      <div class="assistance-question">${request.question}</div>
+      ${
+        request.options && request.options.length > 0
+          ? html`
+          <div class="assistance-options">
+            ${request.options.map(
+              (opt) => html`
+              <button 
+                class="assistance-option-btn"
+                @click=${() => onRespond(request.id, opt.value)}
+              >
+                ${opt.value}
+              </button>
+            `,
+            )}
+          </div>
+        `
+          : html`
+          <div class="assistance-input">
+            <input type="text" placeholder="Type your response..." id="response-${request.id}" />
+            <button 
+              class="btn primary small"
+              @click=${() => {
+                const input = document.getElementById(`response-${request.id}`) as HTMLInputElement;
+                if (input?.value) {
+                  onRespond(request.id, input.value);
+                }
+              }}
+            >
+              Send
+            </button>
+          </div>
+        `
+      }
+    </div>
+  `;
+}
+
+function renderCreateMissionForm(props: MissionsProps) {
+  return html`
+    <div class="create-mission-overlay">
+      <div class="create-mission-modal">
+        <div class="modal-header">
+          <h3>Create New Mission</h3>
+          <button class="btn icon" @click=${props.onCancelCreate}>✕</button>
+        </div>
+        <form id="create-mission-form" @submit=${(e: Event) => {
+          e.preventDefault();
+          const form = e.target as HTMLFormElement;
+          const formData = new FormData(form);
+          props.onSubmitMission({
+            name: formData.get("name") as string,
+            objective: formData.get("objective") as string,
+            description: formData.get("description") as string,
+            config: {
+              max_duration_minutes: parseInt(formData.get("max_duration") as string) || 60,
+              assistance_timeout_seconds:
+                parseInt(formData.get("assistance_timeout") as string) || 300,
+            },
+          });
+        }}>
+          <div class="form-group">
+            <label for="name">Mission Name</label>
+            <input type="text" id="name" name="name" required placeholder="e.g., Build Authentication Feature" />
+          </div>
+          <div class="form-group">
+            <label for="objective">Objective</label>
+            <textarea id="objective" name="objective" required placeholder="Describe what needs to be accomplished..." rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="description">Description (optional)</label>
+            <textarea id="description" name="description" placeholder="Additional context or requirements..." rows="2"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="max_duration">Max Duration (minutes)</label>
+              <input type="number" id="max_duration" name="max_duration" value="60" min="5" max="480" />
+            </div>
+            <div class="form-group">
+              <label for="assistance_timeout">Assistance Timeout (seconds)</label>
+              <input type="number" id="assistance_timeout" name="assistance_timeout" value="300" min="30" max="900" />
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn" @click=${props.onCancelCreate}>Cancel</button>
+            <button type="submit" class="btn primary">Create Mission</button>
+          </div>
+        </form>
+      </div>
     </div>
   `;
 }
@@ -151,100 +341,169 @@ function renderMissionCard(
   onPause: (id: string) => void,
   onResume: (id: string) => void,
   onCancel: (id: string) => void,
+  onView: (id: string) => void,
 ) {
+  // Handle both full mission objects and list summaries (which have team_count instead of teams)
+  const teams = mission.teams || [];
+  const teamCount = (mission as unknown as { team_count?: number }).team_count ?? teams.length;
+
   const teamProgress =
-    mission.teams.length > 0
-      ? mission.teams.reduce((sum, t) => sum + t.progress, 0) / mission.teams.length
-      : 0;
+    mission.progress ||
+    (teams.length > 0 ? teams.reduce((sum, t) => sum + t.progress, 0) / teams.length : 0);
+
+  const activeTeams = teams.filter((t) => t.status === "working" || t.status === "running").length;
+  const completedTeams = teams.filter((t) => t.status === "completed").length;
 
   return html`
-    <div class="mission-card">
+    <div class="mission-card" @click=${() => onView(mission.id)}>
       <div class="mission-card-header">
         <div class="mission-card-title">
-          <h3>${mission.goal}</h3>
+          <h3>${mission.name || mission.goal}</h3>
           ${mission.description ? html`<p>${mission.description}</p>` : nothing}
         </div>
         ${renderStatusBadge(mission.status)}
       </div>
 
-      ${mission.status === 'running'
-        ? html`
+      ${
+        ["active", "running"].includes(mission.status)
+          ? html`
           <div class="mission-progress">
             <div class="mission-progress-header">
-              <span>Overall Progress</span>
+              <span>Progress</span>
               <span>${Math.round(teamProgress * 100)}%</span>
             </div>
             ${renderProgressBar(teamProgress)}
           </div>
         `
-        : nothing}
+          : nothing
+      }
 
-      ${mission.teams.length > 0
-        ? html`
+      <div class="mission-meta">
+        <div class="mission-meta-item">
+          <span class="meta-label">Teams:</span>
+          <span class="meta-value">${completedTeams}/${teamCount} complete</span>
+        </div>
+        ${
+          activeTeams > 0
+            ? html`
+            <div class="mission-meta-item">
+              <span class="meta-label">Active:</span>
+              <span class="meta-value">${activeTeams}</span>
+            </div>
+          `
+            : nothing
+        }
+        ${
+          mission.config?.max_duration_minutes
+            ? html`
+            <div class="mission-meta-item">
+              <span class="meta-label">Max Time:</span>
+              <span class="meta-value">${mission.config.max_duration_minutes}m</span>
+            </div>
+          `
+            : nothing
+        }
+      </div>
+
+      ${
+        teams.length > 0
+          ? html`
           <div class="mission-teams">
-            <div class="mission-teams-label">Teams (${mission.teams.length})</div>
+            <div class="mission-teams-label">Teams</div>
             <div class="mission-teams-list">
-              ${mission.teams.map(
+              ${teams.slice(0, 5).map(
                 (team) => html`
-                  <div class="mission-team-chip">
+                  <div class="mission-team-chip" title="${team.name}: ${team.status}">
+                    ${renderTeamStatusDot(team.status)}
                     <span>${team.name}</span>
-                    <span class="mission-team-progress">${Math.round(team.progress * 100)}%</span>
+                    ${
+                      team.progress > 0
+                        ? html`<span class="mission-team-progress">${Math.round(team.progress * 100)}%</span>`
+                        : nothing
+                    }
                   </div>
                 `,
               )}
+              ${
+                teams.length > 5
+                  ? html`<span class="more-teams">+${teams.length - 5} more</span>`
+                  : nothing
+              }
             </div>
           </div>
         `
-        : nothing}
+          : nothing
+      }
 
-      <div class="mission-actions">
-        ${mission.status === 'ready'
-          ? html`
+      <div class="mission-actions" @click=${(e: Event) => e.stopPropagation()}>
+        ${
+          ["draft", "planning", "ready"].includes(mission.status)
+            ? html`
             <button class="btn primary" @click=${() => onLaunch(mission.id)}>
-              Launch
+              ⚡ Launch
             </button>
           `
-          : nothing}
-        ${mission.status === 'running'
-          ? html`
+            : nothing
+        }
+        ${
+          ["active", "running"].includes(mission.status)
+            ? html`
             <button class="btn" @click=${() => onPause(mission.id)}>
-              Pause
+              ⏸️ Pause
             </button>
           `
-          : nothing}
-        ${mission.status === 'paused'
-          ? html`
-            <button class="btn" @click=${() => onResume(mission.id)}>
-              Resume
+            : nothing
+        }
+        ${
+          mission.status === "paused"
+            ? html`
+            <button class="btn primary" @click=${() => onResume(mission.id)}>
+              ▶️ Resume
             </button>
           `
-          : nothing}
-        ${['ready', 'running', 'paused'].includes(mission.status)
-          ? html`
+            : nothing
+        }
+        ${
+          ["draft", "planning", "ready", "active", "running", "paused"].includes(mission.status)
+            ? html`
             <button class="btn danger" @click=${() => onCancel(mission.id)}>
-              Cancel
+              ✕ Cancel
             </button>
           `
-          : nothing}
+            : nothing
+        }
       </div>
 
-      <div class="mission-timestamp">
-        Created ${new Date(mission.created_at).toLocaleString()}
-      </div>
+      ${
+        mission.created_at
+          ? html`
+          <div class="mission-timestamp">
+            Created ${new Date(mission.created_at).toLocaleString()}
+            ${
+              mission.launched_at
+                ? html` • Launched ${new Date(mission.launched_at).toLocaleString()}`
+                : nothing
+            }
+          </div>
+        `
+          : nothing
+      }
     </div>
   `;
 }
 
 export function renderMissions(props: MissionsProps) {
+  const launcherStats = props.stats?.launcher;
+
   return html`
     <section class="card missions">
       <div class="missions-header">
         <div>
-          <h2>Missions</h2>
+          <h2>🚀 Missions</h2>
           <p class="muted">Parallel Team Orchestration</p>
         </div>
         <div class="missions-header-actions">
-          <button class="btn" @click=${props.onRefresh} ?disabled=${props.loading}>
+          <button class="btn" @click=${props.onRefresh} ?disabled=${props.loading} title="Refresh">
             ${icons.refresh}
           </button>
           <button class="btn primary" @click=${props.onCreateMission}>
@@ -253,34 +512,63 @@ export function renderMissions(props: MissionsProps) {
         </div>
       </div>
 
-      ${props.error
-        ? html`<div class="callout danger">${props.error}</div>`
-        : nothing}
+      ${props.error ? html`<div class="callout danger">${props.error}</div>` : nothing}
 
-      ${props.stats
-        ? html`
+      ${
+        props.stats
+          ? html`
           <div class="mission-stats">
-            ${renderStatCard(props.stats.total_missions, 'Total', '#00d4ff')}
-            ${renderStatCard(props.stats.active_missions, 'Active', '#f59e0b')}
-            ${renderStatCard(props.stats.completed_missions, 'Completed', '#22c55e')}
-            ${renderStatCard(Math.round(props.stats.average_efficiency * 100), 'Efficiency %', '#8b5cf6')}
+            ${renderStatCard(launcherStats?.active_missions || 0, "Active", "#f59e0b", "⚡")}
+            ${renderStatCard(launcherStats?.active_teams || 0, "Teams", "#3b82f6", "👥")}
+            ${renderStatCard(launcherStats?.artifact_streamer?.total_published || 0, "Artifacts", "#8b5cf6", "📦")}
+            ${renderStatCard(
+              launcherStats?.assistance_protocol?.pending_requests || 0,
+              "Assistance",
+              launcherStats?.assistance_protocol?.pending_requests > 0 ? "#ef4444" : "#22c55e",
+              "❓",
+            )}
           </div>
         `
-        : nothing}
+          : nothing
+      }
 
-      ${props.loading
-        ? html`<div class="muted">Loading missions...</div>`
-        : nothing}
+      ${
+        props.assistanceRequests.length > 0
+          ? html`
+          <div class="assistance-section">
+            <h3>⚠️ Assistance Requests (${props.assistanceRequests.length})</h3>
+            <div class="assistance-list">
+              ${props.assistanceRequests.map((req) =>
+                renderAssistanceRequest(req, props.onRespondToAssistance),
+              )}
+            </div>
+          </div>
+        `
+          : nothing
+      }
 
-      ${!props.loading && props.missions.length === 0
-        ? html`
+      ${
+        props.loading
+          ? html`
+              <div class="loading-indicator"><span class="spinner"></span> Loading missions...</div>
+            `
+          : nothing
+      }
+
+      ${
+        !props.loading && props.missions.length === 0
+          ? html`
           <div class="missions-empty">
-            ${icons.folder}
+            <div class="empty-icon">${icons.folder}</div>
             <p>No missions yet</p>
             <p class="muted">Create your first mission to start orchestrating parallel teams</p>
+            <button class="btn primary" @click=${props.onCreateMission}>
+              + Create Mission
+            </button>
           </div>
         `
-        : nothing}
+          : nothing
+      }
 
       <div class="missions-list">
         ${repeat(
@@ -293,9 +581,12 @@ export function renderMissions(props: MissionsProps) {
               props.onPauseMission,
               props.onResumeMission,
               props.onCancelMission,
+              props.onViewMission,
             ),
         )}
       </div>
+
+      ${props.showCreateForm ? renderCreateMissionForm(props) : nothing}
     </section>
 
     <style>
@@ -303,6 +594,8 @@ export function renderMissions(props: MissionsProps) {
         display: flex;
         flex-direction: column;
         gap: 16px;
+        max-width: 1200px;
+        margin: 0 auto;
       }
 
       .missions-header {
@@ -313,7 +606,7 @@ export function renderMissions(props: MissionsProps) {
 
       .missions-header h2 {
         margin: 0;
-        font-size: 20px;
+        font-size: 24px;
       }
 
       .missions-header-actions {
@@ -328,26 +621,130 @@ export function renderMissions(props: MissionsProps) {
       }
 
       .mission-stat-card {
-        padding: 12px;
-        border-radius: 6px;
+        padding: 16px;
+        border-radius: 8px;
         border: 1px solid;
+        text-align: center;
+      }
+
+      .mission-stat-icon {
+        font-size: 20px;
+        margin-bottom: 8px;
       }
 
       .mission-stat-value {
-        font-size: 24px;
+        font-size: 28px;
         font-weight: 700;
       }
 
       .mission-stat-label {
         font-size: 12px;
         color: var(--text-muted, #71717a);
+        margin-top: 4px;
+      }
+
+      .assistance-section {
+        background: var(--card-bg, #141415);
+        border: 1px solid #f9731644;
+        border-radius: 8px;
+        padding: 16px;
+      }
+
+      .assistance-section h3 {
+        margin: 0 0 12px;
+        font-size: 14px;
+      }
+
+      .assistance-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .assistance-request-card {
+        background: var(--bg-muted, #18181b);
+        border-radius: 6px;
+        padding: 12px;
+      }
+
+      .assistance-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .assistance-priority {
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-weight: 600;
+      }
+
+      .assistance-type {
+        font-size: 12px;
+        color: var(--text-muted, #71717a);
+      }
+
+      .assistance-time {
+        margin-left: auto;
+        font-size: 11px;
+        color: var(--text-dim, #52525b);
+      }
+
+      .assistance-question {
+        font-size: 14px;
+        margin-bottom: 12px;
+      }
+
+      .assistance-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .assistance-option-btn {
+        padding: 8px 16px;
+        background: var(--bg, #0a0a0b);
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+        border-radius: 4px;
+        color: inherit;
+        cursor: pointer;
+        font-size: 13px;
+      }
+
+      .assistance-option-btn:hover {
+        background: var(--bg-hover, #141415);
+        border-color: #00d4ff44;
+      }
+
+      .assistance-input {
+        display: flex;
+        gap: 8px;
+      }
+
+      .assistance-input input {
+        flex: 1;
+        padding: 8px 12px;
+        background: var(--bg, #0a0a0b);
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+        border-radius: 4px;
+        color: inherit;
+        font-size: 13px;
       }
 
       .mission-card {
-        padding: 16px;
+        padding: 20px;
         border-radius: 8px;
         background: var(--card-bg, #141415);
         border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+        cursor: pointer;
+        transition: border-color 0.2s, transform 0.1s;
+      }
+
+      .mission-card:hover {
+        border-color: #00d4ff44;
+        transform: translateY(-1px);
       }
 
       .mission-card-header {
@@ -377,6 +774,7 @@ export function renderMissions(props: MissionsProps) {
         font-weight: 500;
         border-radius: 9999px;
         border: 1px solid;
+        text-transform: uppercase;
       }
 
       .mission-progress {
@@ -393,16 +791,36 @@ export function renderMissions(props: MissionsProps) {
 
       .mission-progress-bar {
         width: 100%;
-        height: 6px;
+        height: 8px;
         background: var(--bg-muted, #18181b);
-        border-radius: 3px;
+        border-radius: 4px;
         overflow: hidden;
       }
 
       .mission-progress-fill {
         height: 100%;
-        border-radius: 3px;
+        border-radius: 4px;
         transition: width 0.3s ease;
+      }
+
+      .mission-meta {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 12px;
+        font-size: 12px;
+      }
+
+      .mission-meta-item {
+        display: flex;
+        gap: 4px;
+      }
+
+      .meta-label {
+        color: var(--text-muted, #71717a);
+      }
+
+      .meta-value {
+        font-weight: 500;
       }
 
       .mission-teams {
@@ -419,9 +837,13 @@ export function renderMissions(props: MissionsProps) {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
+        align-items: center;
       }
 
       .mission-team-chip {
+        display: flex;
+        align-items: center;
+        gap: 6px;
         padding: 6px 10px;
         border-radius: 4px;
         background: var(--bg-muted, #18181b);
@@ -429,8 +851,19 @@ export function renderMissions(props: MissionsProps) {
         font-size: 12px;
       }
 
+      .team-status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+
       .mission-team-progress {
-        margin-left: 8px;
+        color: var(--text-muted, #71717a);
+        font-size: 11px;
+      }
+
+      .more-teams {
+        font-size: 12px;
         color: var(--text-muted, #71717a);
       }
 
@@ -451,30 +884,183 @@ export function renderMissions(props: MissionsProps) {
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 40px;
+        padding: 60px;
         color: var(--text-muted, #71717a);
+        text-align: center;
       }
 
-      .missions-empty svg {
-        width: 48px;
-        height: 48px;
-        margin-bottom: 12px;
+      .empty-icon {
         opacity: 0.5;
+        margin-bottom: 16px;
+      }
+
+      .empty-icon svg {
+        width: 64px;
+        height: 64px;
       }
 
       .missions-empty p {
+        margin: 0 0 8px;
+      }
+
+      .loading-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 20px;
+        color: var(--text-muted, #71717a);
+      }
+
+      .spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid var(--border, rgba(255, 255, 255, 0.1));
+        border-top-color: #00d4ff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      /* Create Mission Modal */
+      .create-mission-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+
+      .create-mission-modal {
+        background: var(--card-bg, #141415);
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+        border-radius: 12px;
+        padding: 24px;
+        width: 100%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .modal-header h3 {
         margin: 0;
+        font-size: 18px;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 13px;
+        color: var(--text-muted, #71717a);
+        margin-bottom: 6px;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 10px 12px;
+        background: var(--bg, #0a0a0b);
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+        border-radius: 6px;
+        color: inherit;
+        font-size: 14px;
+        font-family: inherit;
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #00d4ff;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 24px;
+      }
+
+      .btn {
+        padding: 8px 16px;
+        border-radius: 6px;
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+        background: var(--bg, #0a0a0b);
+        color: inherit;
+        font-size: 13px;
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s;
+      }
+
+      .btn:hover {
+        background: var(--bg-hover, #141415);
+      }
+
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
       }
 
       .btn.primary {
         background: #00d4ff;
         color: #000;
+        border-color: #00d4ff;
+      }
+
+      .btn.primary:hover {
+        background: #00b8e6;
       }
 
       .btn.danger {
-        background: transparent;
         color: #ef4444;
         border-color: #ef444444;
+      }
+
+      .btn.danger:hover {
+        background: #ef444422;
+      }
+
+      .btn.icon {
+        padding: 8px;
+        line-height: 1;
+      }
+
+      .btn.small {
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+
+      @media (max-width: 768px) {
+        .mission-stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .form-row {
+          grid-template-columns: 1fr;
+        }
       }
     </style>
   `;

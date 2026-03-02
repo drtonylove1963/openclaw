@@ -73,13 +73,15 @@ import { renderCron } from "./views/cron.ts";
 import { renderDebug } from "./views/debug.ts";
 import { renderExecApprovalPrompt } from "./views/exec-approval.ts";
 import { renderGatewayUrlConfirmation } from "./views/gateway-url-confirmation.ts";
+import { renderHealing } from "./views/healing.ts";
 import { renderInstances } from "./views/instances.ts";
 import { renderLogs } from "./views/logs.ts";
+import { renderMissions } from "./views/missions.ts";
 import { renderNodes } from "./views/nodes.ts";
 import { renderOverview } from "./views/overview.ts";
+import { renderRefinement } from "./views/refinement.ts";
 import { renderSessions } from "./views/sessions.ts";
 import { renderSkills } from "./views/skills.ts";
-import { renderMissions } from "./views/missions.ts";
 
 const AVATAR_DATA_RE = /^data:/i;
 const AVATAR_HTTP_RE = /^https?:\/\//i;
@@ -1141,14 +1143,37 @@ export function renderApp(state: AppViewState) {
             ? renderMissions({
                 missions: state.missions || [],
                 stats: state.missionsStats || null,
+                assistanceRequests: state.assistanceRequests || [],
                 loading: state.missionsLoading || false,
                 error: state.missionsError || null,
+                showCreateForm: state.showMissionCreateForm || false,
                 onRefresh: () => state.loadMissions?.(),
                 onCreateMission: () => state.showCreateMissionDialog?.(),
+                onCancelCreate: () => state.hideCreateMissionDialog?.(),
+                onSubmitMission: (mission) => state.submitMission?.(mission),
                 onLaunchMission: (id) => state.launchMission?.(id),
                 onPauseMission: (id) => state.pauseMission?.(id),
                 onResumeMission: (id) => state.resumeMission?.(id),
                 onCancelMission: (id) => state.cancelMission?.(id),
+                onViewMission: (id) => state.viewMission?.(id),
+                onRespondToAssistance: (requestId, response) =>
+                  state.respondToAssistance?.(requestId, response),
+              })
+            : nothing
+        }
+
+        ${
+          state.tab === "healing"
+            ? renderHealing({
+                config: state.config || {},
+              })
+            : nothing
+        }
+
+        ${
+          state.tab === "refinement"
+            ? renderRefinement({
+                config: state.config || {},
               })
             : nothing
         }

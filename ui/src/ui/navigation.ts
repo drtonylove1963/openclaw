@@ -5,7 +5,16 @@ export const TAB_GROUPS = [
   { label: "pronetheia", tabs: ["chat", "missions"] },
   {
     label: "control",
-    tabs: ["overview", "channels", "instances", "sessions", "usage", "cron"],
+    tabs: [
+      "overview",
+      "channels",
+      "instances",
+      "sessions",
+      "usage",
+      "cron",
+      "healing",
+      "refinement",
+    ],
   },
   { label: "agent", tabs: ["agents", "skills", "nodes"] },
   { label: "settings", tabs: ["config", "debug", "logs"] },
@@ -25,7 +34,9 @@ export type Tab =
   | "config"
   | "debug"
   | "logs"
-  | "missions";
+  | "missions"
+  | "healing"
+  | "refinement";
 
 const TAB_PATHS: Record<Tab, string> = {
   agents: "/agents",
@@ -42,6 +53,8 @@ const TAB_PATHS: Record<Tab, string> = {
   debug: "/debug",
   logs: "/logs",
   missions: "/missions",
+  healing: "/healing",
+  refinement: "/refinement",
 };
 
 const PATH_TO_TAB = new Map(Object.entries(TAB_PATHS).map(([tab, path]) => [path, tab as Tab]));

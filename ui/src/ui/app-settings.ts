@@ -251,6 +251,12 @@ export async function refreshActiveTab(host: SettingsHost) {
     await loadLogs(host as unknown as PronetheiaApp, { reset: true });
     scheduleLogsScroll(host as unknown as Parameters<typeof scheduleLogsScroll>[0], true);
   }
+  if (host.tab === "missions") {
+    const app = host as unknown as PronetheiaApp;
+    if (typeof app.loadMissions === "function") {
+      await app.loadMissions();
+    }
+  }
 }
 
 export function inferBasePath() {

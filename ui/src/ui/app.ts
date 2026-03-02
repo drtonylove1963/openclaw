@@ -1,6 +1,4 @@
 import { LitElement } from "lit";
-import type { Mission, MissionStats } from "./views/missions.ts";
-import * as missionsApi from "./data/missions-api.ts";
 import { customElement, state } from "lit/decorators.js";
 import { i18n, I18nController, isSupportedLocale } from "../i18n/index.ts";
 import {
@@ -60,6 +58,7 @@ import type { DevicePairingList } from "./controllers/devices.ts";
 import type { ExecApprovalRequest } from "./controllers/exec-approval.ts";
 import type { ExecApprovalsFile, ExecApprovalsSnapshot } from "./controllers/exec-approvals.ts";
 import type { SkillMessage } from "./controllers/skills.ts";
+import * as missionsApi from "./data/missions-api.ts";
 import type { GatewayBrowserClient, GatewayHelloOk } from "./gateway.ts";
 import type { Tab } from "./navigation.ts";
 import { loadSettings, type UiSettings } from "./storage.ts";
@@ -87,6 +86,7 @@ import type {
 import { type ChatAttachment, type ChatQueueItem, type CronFormState } from "./ui-types.ts";
 import { generateUUID } from "./uuid.ts";
 import type { NostrProfileFormState } from "./views/channels.nostr-profile-form.ts";
+import type { Mission, MissionStats } from "./views/missions.ts";
 
 declare global {
   interface Window {
@@ -375,6 +375,20 @@ export class PronetheiaApp extends LitElement {
   @state() missionsStats: MissionStats | null = null;
   @state() missionsLoading = false;
   @state() missionsError: string | null = null;
+  @state() showMissionCreateForm = false;
+  @state() assistanceRequests: Array<{
+    id: string;
+    team_id: string;
+    mission_id: string;
+    type: "decision" | "clarification" | "blocker" | "approval" | "review";
+    priority: "low" | "medium" | "high" | "critical";
+    question: string;
+    context?: string;
+    options?: { value: string; pros?: string[]; cons?: string[] }[];
+    status: "pending" | "responded" | "timeout";
+    created_at: string;
+    expires_at: string;
+  }> = [];
   @state() logsAtBottom = true;
 
   client: GatewayBrowserClient | null = null;
@@ -441,7 +455,6 @@ export class PronetheiaApp extends LitElement {
     exportLogsInternal(lines, label);
   }
 
-
   // Missions methods (Pronetheia Phase 5)
   async loadMissions() {
     this.missionsLoading = true;
@@ -461,10 +474,27 @@ export class PronetheiaApp extends LitElement {
   }
 
   showCreateMissionDialog() {
-    // TODO: Implement create mission dialog
-    const goal = prompt("Enter mission goal:");
-    if (goal) {
-      this.createMission(goal);
+    this.showMissionCreateForm = true;
+  }
+
+  hideCreateMissionDialog() {
+    this.showMissionCreateForm = false;
+  }
+
+  async submitMission(mission: Partial<Mission>) {
+    try {
+      const goal = mission.objective || mission.name || "";
+      const description = mission.description || undefined;
+      await missionsApi.createMission({
+        goal,
+        description,
+        auto_plan: true,
+        max_teams: mission.config?.max_teams || 3,
+      });
+      this.showMissionCreateForm = false;
+      await this.loadMissions();
+    } catch (err) {
+      this.missionsError = err instanceof Error ? err.message : "Failed to create mission";
     }
   }
 
@@ -474,6 +504,24 @@ export class PronetheiaApp extends LitElement {
       await this.loadMissions();
     } catch (err) {
       this.missionsError = err instanceof Error ? err.message : "Failed to create mission";
+    }
+  }
+
+  viewMission(id: string) {
+    // For now, just log - could navigate to detail view
+    console.log("View mission:", id);
+    // TODO: Implement mission detail view
+  }
+
+  async respondToAssistance(requestId: string, response: string) {
+    try {
+      // TODO: Call assistance response API when implemented
+      console.log("Respond to assistance:", requestId, response);
+      // Remove the request from the list
+      this.assistanceRequests = this.assistanceRequests.filter((r) => r.id !== requestId);
+    } catch (err) {
+      this.missionsError =
+        err instanceof Error ? err.message : "Failed to respond to assistance request";
     }
   }
 
