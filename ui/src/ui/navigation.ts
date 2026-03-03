@@ -143,7 +143,7 @@ export function inferBasePathFromPathname(pathname: string): string {
 export function iconForTab(tab: Tab): IconName {
   switch (tab) {
     case "agents":
-      return "folder";
+      return "brain";
     case "chat":
       return "messageSquare";
     case "overview":
