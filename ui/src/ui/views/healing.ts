@@ -345,7 +345,7 @@ export class HealingView extends LitElement {
         }
       });
 
-      if (!response.ok) throw new Error('Failed to fetch status');
+      if (!response.ok) {throw new Error('Failed to fetch status');}
 
       this.status = await response.json();
       this.monitoringEnabled = this.status.monitor?.running || false;
@@ -365,7 +365,7 @@ export class HealingView extends LitElement {
         }
       });
 
-      if (!response.ok) throw new Error('Failed to fetch proposals');
+      if (!response.ok) {throw new Error('Failed to fetch proposals');}
 
       const data = await response.json();
       this.proposals = data.proposals || [];
@@ -382,7 +382,7 @@ export class HealingView extends LitElement {
         }
       });
 
-      if (!response.ok) throw new Error('Failed to fetch history');
+      if (!response.ok) {throw new Error('Failed to fetch history');}
 
       const data = await response.json();
       this.history = data.events || [];
@@ -401,7 +401,7 @@ export class HealingView extends LitElement {
         }
       });
 
-      if (!response.ok) throw new Error(`Failed to ${endpoint} monitoring`);
+      if (!response.ok) {throw new Error(`Failed to ${endpoint} monitoring`);}
 
       this.monitoringEnabled = !this.monitoringEnabled;
       await this.fetchStatus();
@@ -424,7 +424,7 @@ export class HealingView extends LitElement {
         })
       });
 
-      if (!response.ok) throw new Error('Failed to approve proposal');
+      if (!response.ok) {throw new Error('Failed to approve proposal');}
 
       await this.fetchProposals();
       await this.fetchHistory();
@@ -435,10 +435,10 @@ export class HealingView extends LitElement {
 
   private async triggerManualHealing() {
     const container = prompt('Container name (e.g., backend):');
-    if (!container) return;
+    if (!container) {return;}
 
     const service = prompt('Service name (e.g., pronetheia-api):');
-    if (!service) return;
+    if (!service) {return;}
 
     try {
       const response = await fetch('/api/v1/healing/manual-healing', {
@@ -454,7 +454,7 @@ export class HealingView extends LitElement {
         })
       });
 
-      if (!response.ok) throw new Error('Manual healing failed');
+      if (!response.ok) {throw new Error('Manual healing failed');}
 
       await this.fetchHistory();
       alert('Healing cycle completed successfully!');
