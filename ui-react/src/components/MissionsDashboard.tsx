@@ -312,7 +312,7 @@ const CreateMissionForm: React.FC<CreateFormProps> = ({ onSubmit, loading, onCan
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!goal.trim()) return;
+    if (!goal.trim()) {return;}
     onSubmit({
       goal: goal.trim(),
       description: description.trim() || undefined,
@@ -536,7 +536,7 @@ export const MissionsDashboard: React.FC = () => {
   };
 
   const handleCancel = async (missionId: string) => {
-    if (!confirm('Are you sure you want to cancel this mission?')) return;
+    if (!confirm('Are you sure you want to cancel this mission?')) {return;}
     setActionLoading(missionId);
     try {
       await cancelMission(missionId);

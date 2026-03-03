@@ -97,7 +97,7 @@ export async function storeMemory(
  * Format memories as context for injection
  */
 export function formatMemoriesAsContext(memories: Memory[]): string {
-  if (memories.length === 0) return '';
+  if (memories.length === 0) {return '';}
   
   const lines = memories.map(m => 
     `- [${m.memory_type}] ${m.content}`

@@ -141,7 +141,8 @@ export async function listMissions(): Promise<Mission[]> {
     throw new Error(`Failed to fetch missions: ${response.statusText}`);
   }
   
-  return response.json();
+  const data = await response.json();
+  return data.missions || [];
 }
 
 /**

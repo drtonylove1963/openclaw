@@ -1,22 +1,19 @@
 <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="lobster-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ff4d4d"/>
-      <stop offset="100%" stop-color="#991b1b"/>
+    <linearGradient id="bulb-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#b8d4e8"/>
+      <stop offset="100%" stop-color="#e8f4fc"/>
+    </linearGradient>
+    <linearGradient id="brain-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a6b9c"/>
+      <stop offset="100%" stop-color="#2d8cc4"/>
     </linearGradient>
   </defs>
-  <!-- Body -->
-  <path d="M60 10 C30 10 15 35 15 55 C15 75 30 95 45 100 L45 110 L55 110 L55 100 C55 100 60 102 65 100 L65 110 L75 110 L75 100 C90 95 105 75 105 55 C105 35 90 10 60 10Z" fill="url(#lobster-gradient)"/>
-  <!-- Left Claw -->
-  <path d="M20 45 C5 40 0 50 5 60 C10 70 20 65 25 55 C28 48 25 45 20 45Z" fill="url(#lobster-gradient)"/>
-  <!-- Right Claw -->
-  <path d="M100 45 C115 40 120 50 115 60 C110 70 100 65 95 55 C92 48 95 45 100 45Z" fill="url(#lobster-gradient)"/>
-  <!-- Antenna -->
-  <path d="M45 15 Q35 5 30 8" stroke="#ff4d4d" stroke-width="3" stroke-linecap="round"/>
-  <path d="M75 15 Q85 5 90 8" stroke="#ff4d4d" stroke-width="3" stroke-linecap="round"/>
-  <!-- Eyes -->
-  <circle cx="45" cy="35" r="6" fill="#050810"/>
-  <circle cx="75" cy="35" r="6" fill="#050810"/>
-  <circle cx="46" cy="34" r="2.5" fill="#00e5cc"/>
-  <circle cx="76" cy="34" r="2.5" fill="#00e5cc"/>
+  <path d="M60 8 C30 8 12 30 12 55 C12 72 22 86 35 94 L35 105 C35 110 40 115 50 115 L70 115 C80 115 85 110 85 105 L85 94 C98 86 108 72 108 55 C108 30 90 8 60 8Z" fill="url(#bulb-gradient)" stroke="#1a6b9c" stroke-width="3"/>
+  <rect x="38" y="98" width="44" height="6" rx="2" fill="#1a6b9c"/>
+  <rect x="40" y="106" width="40" height="5" rx="2" fill="#1a6b9c"/>
+  <path d="M40 55 C35 50 35 40 45 38 C48 32 58 30 65 35 C72 30 82 32 85 40 C92 42 92 52 87 57 C92 62 90 72 82 74 C78 80 68 82 60 78 C52 82 42 80 38 74 C30 72 28 62 33 57 C28 52 30 45 40 55Z" fill="url(#brain-gradient)"/>
+  <text x="48" y="62" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#a0c4dc">A</text>
+  <line x1="60" y1="48" x2="60" y2="70" stroke="#a0c4dc" stroke-width="1.5"/>
+  <text x="65" y="62" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#a0c4dc">I</text>
 </svg>
