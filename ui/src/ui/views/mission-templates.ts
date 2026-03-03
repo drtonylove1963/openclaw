@@ -23,15 +23,20 @@ interface TeamTemplate {
   estimated_hours: number;
 }
 
-interface MissionTemplate {
+interface MissionTemplateSummary {
   id: string;
   name: string;
   description: string;
   category: string;
+  team_count: number;
+  estimated_hours: number;
+  tags: string[];
+  variables: string[];
+}
+
+interface MissionTemplate extends MissionTemplateSummary {
   goal_template: string;
   teams: TeamTemplate[];
-  variables: string[];
-  tags: string[];
   estimated_total_hours: number;
 }
 
@@ -76,10 +81,11 @@ export function renderMissionTemplates(props: { config: unknown }) {
 export class MissionTemplatesView extends LitElement {
   @property({ type: Object }) config: unknown = {};
   
-  @state() private templates: MissionTemplate[] = [];
+  @state() private templates: MissionTemplateSummary[] = [];
   @state() private loading = true;
   @state() private error = '';
   @state() private selectedTemplate: MissionTemplate | null = null;
+  @state() private selectedTemplateLoading = false;
   @state() private isEditing = false;
   @state() private isCreating = false;
   @state() private editForm: Partial<MissionTemplate> = {};
@@ -596,7 +602,7 @@ export class MissionTemplatesView extends LitElement {
     }
   }
 
-  private get filteredTemplates(): MissionTemplate[] {
+  private get filteredTemplates(): MissionTemplateSummary[] {
     return this.templates.filter(t => {
       const matchesSearch = !this.searchQuery || 
         t.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
@@ -606,10 +612,25 @@ export class MissionTemplatesView extends LitElement {
     });
   }
 
-  private selectTemplate(template: MissionTemplate): void {
-    this.selectedTemplate = template;
+  private async selectTemplate(template: MissionTemplateSummary): Promise<void> {
+    this.selectedTemplateLoading = true;
     this.isEditing = false;
     this.isCreating = false;
+    
+    try {
+      const response = await fetch(`${API_BASE}/api/v1/missions/templates/${template.id}`, {
+        headers: { 'X-Gateway-Secret': GATEWAY_SECRET }
+      });
+      if (response.ok) {
+        this.selectedTemplate = await response.json();
+      } else {
+        this.error = 'Failed to load template details';
+      }
+    } catch (err) {
+      this.error = err instanceof Error ? err.message : 'Failed to load template';
+    } finally {
+      this.selectedTemplateLoading = false;
+    }
   }
 
   private startCreate(): void {
@@ -797,15 +818,20 @@ export class MissionTemplatesView extends LitElement {
                 <div class="template-item-name">${t.name}</div>
                 <div class="template-item-meta">
                   <span>${t.category}</span>
-                  <span>${t.teams?.length || 0} teams</span>
-                  <span>${t.estimated_total_hours || 0}h</span>
+                  <span>${t.team_count || 0} teams</span>
+                  <span>${t.estimated_hours || 0}h</span>
                 </div>
               </div>
             `)}
         </div>
 
         <div class="template-detail">
-          ${this.selectedTemplate ? this.renderDetail() : html`
+          ${this.selectedTemplateLoading ? html`
+            <div class="empty-state">
+              <div class="empty-state-icon">⏳</div>
+              <p>Loading template...</p>
+            </div>
+          ` : this.selectedTemplate ? this.renderDetail() : html`
             <div class="empty-state">
               <div class="empty-state-icon">📋</div>
               <p>Select a template to view details</p>
@@ -836,7 +862,7 @@ export class MissionTemplatesView extends LitElement {
 
       <div class="section">
         <div class="section-title">Goal Template</div>
-        <div class="tag">${t.goal_template}</div>
+        <div class="tag">${t.goal_template || 'Not defined'}</div>
       </div>
 
       ${t.variables?.length ? html`
@@ -851,7 +877,7 @@ export class MissionTemplatesView extends LitElement {
       <div class="section">
         <div class="section-title">Teams (${t.teams?.length || 0})</div>
         <div class="teams-list">
-          ${t.teams?.map(team => html`
+          ${t.teams?.length ? t.teams.map(team => html`
             <div class="team-card">
               <div class="team-card-header">
                 <span class="team-name">${team.name}</span>
@@ -864,7 +890,7 @@ export class MissionTemplatesView extends LitElement {
                 ${team.depends_on?.length ? html`<span>Deps: ${team.depends_on.join(', ')}</span>` : ''}
               </div>
             </div>
-          `) || html`<p class="empty-state">No teams defined</p>`}
+          `) : html`<p style="color: var(--muted)">No teams defined</p>`}
         </div>
       </div>
 
