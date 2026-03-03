@@ -2,7 +2,7 @@ import { t } from "../i18n/index.ts";
 import type { IconName } from "./icons.js";
 
 export const TAB_GROUPS = [
-  { label: "pronetheia", tabs: ["chat", "missions"] },
+  { label: "pronetheia", tabs: ["chat", "missions", "templates"] },
   {
     label: "control",
     tabs: [
@@ -35,6 +35,7 @@ export type Tab =
   | "debug"
   | "logs"
   | "missions"
+  | "templates"
   | "healing"
   | "refinement";
 
@@ -53,6 +54,7 @@ const TAB_PATHS: Record<Tab, string> = {
   debug: "/debug",
   logs: "/logs",
   missions: "/missions",
+  templates: "/templates",
   healing: "/healing",
   refinement: "/refinement",
 };

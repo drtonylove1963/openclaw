@@ -74,6 +74,7 @@ import { renderDebug } from "./views/debug.ts";
 import { renderExecApprovalPrompt } from "./views/exec-approval.ts";
 import { renderGatewayUrlConfirmation } from "./views/gateway-url-confirmation.ts";
 import { renderHealing } from "./views/healing.ts";
+import { renderMissionTemplates } from "./views/mission-templates.ts";
 import { renderInstances } from "./views/instances.ts";
 import { renderLogs } from "./views/logs.ts";
 import { renderMissions } from "./views/missions.ts";
@@ -1173,6 +1174,14 @@ export function renderApp(state: AppViewState) {
         ${
           state.tab === "refinement"
             ? renderRefinement({
+                config: state.config || {},
+              })
+            : nothing
+        }
+
+        ${
+          state.tab === "templates"
+            ? renderMissionTemplates({
                 config: state.config || {},
               })
             : nothing
