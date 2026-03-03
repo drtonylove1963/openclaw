@@ -10,7 +10,7 @@
 import { html, LitElement, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 
-const API_BASE = 'http://192.168.1.120:8000';
+const API_BASE = 'https://api.pronetheia.com';
 const GATEWAY_SECRET = '01c1b66797fa9f84e794ed313bb5d1aa4b0add96e216723725b8c88b8e6c57eb';
 
 interface TeamTemplate {
