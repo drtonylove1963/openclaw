@@ -8,7 +8,7 @@
 import type { Mission, MissionStats } from "../views/missions.ts";
 
 // API base URL - Use HTTPS endpoint through Caddy proxy
-const API_BASE = "https://app.pronetheia.com/api/v1";
+const API_BASE = "https://api.pronetheia.com/api/v1";
 
 // Gateway secret for authentication
 const GATEWAY_SECRET = "01c1b66797fa9f84e794ed313bb5d1aa4b0add96e216723725b8c88b8e6c57eb";
@@ -19,11 +19,22 @@ const getHeaders = (): HeadersInit => ({
   "X-Gateway-Secret": GATEWAY_SECRET,
 });
 
+// Template summary type
+export interface TemplateSummary {
+  id: string;
+  name: string;
+  category: string;
+  team_count: number;
+  estimated_hours: number;
+}
+
 export interface CreateMissionRequest {
   goal: string;
   description?: string;
   auto_plan?: boolean;
   max_teams?: number;
+  template_id?: string;
+  variables?: Record<string, string>;
 }
 
 /**
@@ -157,6 +168,36 @@ export async function cancelMission(
 
   if (!response.ok) {
     throw new Error(`Failed to cancel mission: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * List mission templates
+ */
+export async function listTemplates(): Promise<TemplateSummary[]> {
+  const response = await fetch(`${API_BASE}/missions/templates/`, {
+    headers: getHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch templates: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Get a specific template
+ */
+export async function getTemplate(templateId: string): Promise<unknown> {
+  const response = await fetch(`${API_BASE}/missions/templates/${templateId}`, {
+    headers: getHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch template: ${response.statusText}`);
   }
 
   return response.json();

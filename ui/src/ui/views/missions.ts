@@ -2,6 +2,19 @@ import { html, nothing } from "lit";
 import { repeat } from "lit/directives/repeat.js";
 import { icons } from "../icons.ts";
 
+// API config for templates
+const API_BASE = 'https://api.pronetheia.com';
+const GATEWAY_SECRET = '01c1b66797fa9f84e794ed313bb5d1aa4b0add96e216723725b8c88b8e6c57eb';
+
+// Template summary type
+interface TemplateSummary {
+  id: string;
+  name: string;
+  category: string;
+  team_count: number;
+  estimated_hours: number;
+}
+
 // Mission types
 export type MissionStatus =
   | "draft"
@@ -132,16 +145,19 @@ export interface MissionsProps {
   loading: boolean;
   error: string | null;
   showCreateForm: boolean;
+  templates?: TemplateSummary[];
+  selectedTemplateId?: string;
   onRefresh: () => void;
   onCreateMission: () => void;
   onCancelCreate: () => void;
-  onSubmitMission: (mission: Partial<Mission>) => void;
+  onSubmitMission: (mission: Partial<Mission> & { template_id?: string; auto_plan?: boolean }) => void;
   onLaunchMission: (id: string) => void;
   onPauseMission: (id: string) => void;
   onResumeMission: (id: string) => void;
   onCancelMission: (id: string) => void;
   onViewMission: (id: string) => void;
   onRespondToAssistance: (requestId: string, response: string) => void;
+  onSelectTemplate?: (templateId: string) => void;
 }
 
 const STATUS_COLORS: Record<MissionStatus, string> = {
@@ -281,6 +297,11 @@ function renderAssistanceRequest(
 }
 
 function renderCreateMissionForm(props: MissionsProps) {
+  const templates = props.templates || [];
+  const selectedTemplate = props.selectedTemplateId 
+    ? templates.find(t => t.id === props.selectedTemplateId) 
+    : null;
+
   return html`
     <div class="create-mission-overlay">
       <div class="create-mission-modal">
@@ -292,10 +313,16 @@ function renderCreateMissionForm(props: MissionsProps) {
           e.preventDefault();
           const form = e.target as HTMLFormElement;
           const formData = new FormData(form);
+          const templateId = formData.get("template_id") as string;
+          const autoPlan = formData.get("auto_plan") === "on";
+          
           props.onSubmitMission({
             name: formData.get("name") as string,
+            goal: formData.get("objective") as string,
             objective: formData.get("objective") as string,
             description: formData.get("description") as string,
+            template_id: templateId || undefined,
+            auto_plan: autoPlan || !templateId, // Auto-plan if no template or explicitly requested
             config: {
               max_duration_minutes: parseInt(formData.get("max_duration") as string) || 60,
               assistance_timeout_seconds:
@@ -303,6 +330,29 @@ function renderCreateMissionForm(props: MissionsProps) {
             },
           });
         }}>
+          <div class="form-group">
+            <label for="template_id">Template (optional)</label>
+            <select id="template_id" name="template_id" @change=${(e: Event) => {
+              const select = e.target as HTMLSelectElement;
+              if (props.onSelectTemplate) {
+                props.onSelectTemplate(select.value);
+              }
+            }}>
+              <option value="">-- No Template (Auto-Plan) --</option>
+              ${templates.map(t => html`
+                <option value=${t.id} ?selected=${props.selectedTemplateId === t.id}>
+                  ${t.name} (${t.team_count} teams, ~${t.estimated_hours}h)
+                </option>
+              `)}
+            </select>
+            ${selectedTemplate ? html`
+              <div class="template-info">
+                <span class="template-category">${selectedTemplate.category}</span>
+                <span class="template-teams">${selectedTemplate.team_count} teams</span>
+                <span class="template-hours">~${selectedTemplate.estimated_hours}h</span>
+              </div>
+            ` : nothing}
+          </div>
           <div class="form-group">
             <label for="name">Mission Name</label>
             <input type="text" id="name" name="name" required placeholder="e.g., Build Authentication Feature" />
@@ -324,6 +374,12 @@ function renderCreateMissionForm(props: MissionsProps) {
               <label for="assistance_timeout">Assistance Timeout (seconds)</label>
               <input type="number" id="assistance_timeout" name="assistance_timeout" value="300" min="30" max="900" />
             </div>
+          </div>
+          <div class="form-group checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="auto_plan" name="auto_plan" ?checked=${!props.selectedTemplateId} />
+              <span>Enable Auto-Planning (adds teams automatically based on goal)</span>
+            </label>
           </div>
           <div class="form-actions">
             <button type="button" class="btn" @click=${props.onCancelCreate}>Cancel</button>
@@ -995,6 +1051,41 @@ export function renderMissions(props: MissionsProps) {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 12px;
+      }
+
+      .template-info {
+        display: flex;
+        gap: 12px;
+        margin-top: 8px;
+        font-size: 12px;
+      }
+
+      .template-info span {
+        padding: 2px 8px;
+        border-radius: 4px;
+        background: var(--bg-muted, #27272a);
+      }
+
+      .template-category {
+        color: var(--accent, #ff5c5c);
+      }
+
+      .checkbox-group {
+        margin-top: 8px;
+      }
+
+      .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .checkbox-label input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        margin: 0;
       }
 
       .form-actions {

@@ -264,8 +264,11 @@ export type AppViewState = {
   missionsStats: MissionStats | null;
   missionsLoading: boolean;
   missionsError: string | null;
+  missionTemplates: unknown[];
+  selectedTemplateId: string | null;
   loadMissions: () => Promise<void>;
   showCreateMissionDialog: () => void;
+  selectMissionTemplate: (templateId: string) => void;
   launchMission: (id: string) => Promise<void>;
   pauseMission: (id: string) => Promise<void>;
   resumeMission: (id: string) => Promise<void>;

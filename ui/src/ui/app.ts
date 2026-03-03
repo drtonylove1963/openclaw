@@ -375,6 +375,8 @@ export class PronetheiaApp extends LitElement {
   @state() missionsStats: MissionStats | null = null;
   @state() missionsLoading = false;
   @state() missionsError: string | null = null;
+  @state() missionTemplates: unknown[] = [];
+  @state() selectedTemplateId: string | null = null;
   @state() showMissionCreateForm = false;
   @state() assistanceRequests: Array<{
     id: string;
@@ -460,12 +462,14 @@ export class PronetheiaApp extends LitElement {
     this.missionsLoading = true;
     this.missionsError = null;
     try {
-      const [missions, stats] = await Promise.all([
+      const [missions, stats, templates] = await Promise.all([
         missionsApi.listMissions(),
         missionsApi.getMissionStats(),
+        missionsApi.listTemplates().catch(() => []), // Don't fail if templates fail
       ]);
       this.missions = missions;
       this.missionsStats = stats;
+      this.missionTemplates = templates;
     } catch (err) {
       this.missionsError = err instanceof Error ? err.message : "Failed to load missions";
     } finally {
@@ -479,19 +483,29 @@ export class PronetheiaApp extends LitElement {
 
   hideCreateMissionDialog() {
     this.showMissionCreateForm = false;
+    this.selectedTemplateId = null;
   }
 
-  async submitMission(mission: Partial<Mission>) {
+  selectMissionTemplate(templateId: string) {
+    this.selectedTemplateId = templateId || null;
+  }
+
+  async submitMission(mission: Partial<Mission> & { template_id?: string; auto_plan?: boolean }) {
     try {
-      const goal = mission.objective || mission.name || "";
+      const goal = mission.objective || mission.goal || mission.name || "";
       const description = mission.description || undefined;
+      const templateId = mission.template_id || undefined;
+      const autoPlan = mission.auto_plan !== false; // Default to true
+      
       await missionsApi.createMission({
         goal,
         description,
-        auto_plan: true,
+        auto_plan: autoPlan,
         max_teams: mission.config?.max_teams || 3,
+        template_id: templateId,
       });
       this.showMissionCreateForm = false;
+      this.selectedTemplateId = null;
       await this.loadMissions();
     } catch (err) {
       this.missionsError = err instanceof Error ? err.message : "Failed to create mission";

@@ -1148,6 +1148,8 @@ export function renderApp(state: AppViewState) {
                 loading: state.missionsLoading || false,
                 error: state.missionsError || null,
                 showCreateForm: state.showMissionCreateForm || false,
+                templates: state.missionTemplates || [],
+                selectedTemplateId: state.selectedTemplateId || undefined,
                 onRefresh: () => state.loadMissions?.(),
                 onCreateMission: () => state.showCreateMissionDialog?.(),
                 onCancelCreate: () => state.hideCreateMissionDialog?.(),
@@ -1159,6 +1161,7 @@ export function renderApp(state: AppViewState) {
                 onViewMission: (id) => state.viewMission?.(id),
                 onRespondToAssistance: (requestId, response) =>
                   state.respondToAssistance?.(requestId, response),
+                onSelectTemplate: (templateId) => state.selectMissionTemplate?.(templateId),
               })
             : nothing
         }
