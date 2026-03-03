@@ -170,6 +170,12 @@ export function iconForTab(tab: Tab): IconName {
       return "scrollText";
     case "missions":
       return "zap";
+    case "templates":
+      return "book";
+    case "healing":
+      return "wrench";
+    case "refinement":
+      return "fileCode";
     default:
       return "folder";
   }
